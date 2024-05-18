@@ -1,2 +1,3 @@
 # Grafos-Quindio
-Trabajo para teoría de Grafos y su uso en las carreteras del departamento del Quindío, en este caso se usará el algoritmo de Dikstra para mostrar el camino más corto entre diferentes municipios
+Proyecto de Teoría de Grafos: Rutas Óptimas en el Quindío
+Este proyecto implementa el algoritmo de Dijkstra para encontrar el camino más corto entre diferentes municipios del departamento del Quindío, Colombia. Es una aplicación práctica de los conceptos de teoría de grafos en la optimización de rutas carreteras.
