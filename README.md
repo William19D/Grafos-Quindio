@@ -4,4 +4,4 @@ Este proyecto implementa el algoritmo de Dijkstra para encontrar el camino más 
 
 
 
-Agradecimientos a [Santiago Fiorino]((https://youtu.be/oMgfGkFSgI0)) por la ayuda en la creación.
+Agradecimientos a [Santiago Fiorino](https://youtu.be/oMgfGkFSgI0) por la ayuda en la creación.
