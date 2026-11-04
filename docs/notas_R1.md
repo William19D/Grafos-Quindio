@@ -318,7 +318,7 @@ Archivos generados por `experimentos/r1_red.py` (no hace falta volver a descarga
   que se conserva la de **menor tiempo** y se descartan las otras 137: 20 136 → 19 999.
 - `data/processed/descarga.json`: fecha de descarga (2026-11-03), versión de OSMnx y servidor.
 - `data/processed/lugares_nodos.csv`: `id,nombre,categoria,lat,lon,nodo,dist_nodo_m,lejano_500m`
-  (+ las demás columnas del catálogo), generado por `experimentos/r1_lugares.py`.
+  (+ las demás columnas del catálogo), producido por `experimentos/r1_lugares.py`.
 - `cargar_grafo()` en `red.py` devuelve `(adj, coords)`: `adj[u] = [(v, tiempo_s, distancia_m),
   ...]` y `coords[u] = (lat, lon)`. Tarda 0.19 s (lectura con el módulo `csv`).
 

@@ -238,9 +238,16 @@ def asignar_pesos(G, traza=None):
             traza.append(f"Paso 3: arista {u}->{v} {datos['length']} m a {datos['speed_kph']} km/h "
                          f"-> {datos['travel_time']:.2f} s")
 
-    # Paso 4: resumen por tipo (ordenado por cantidad de aristas solo para presentarlo)
+    # Paso 4: resumen por tipo, ordenado de mayor a menor cantidad de aristas solo para
+    # presentarlo. Ordenamiento por inserción a mano (pocos tipos de vía, ~11).
+    tipos_ordenados = []
+    for tipo in total:
+        posicion = len(tipos_ordenados)
+        while posicion > 0 and total[tipos_ordenados[posicion - 1]] < total[tipo]:
+            posicion = posicion - 1
+        tipos_ordenados.insert(posicion, tipo)
     resumen = []
-    for tipo in sorted(total, key=total.get, reverse=True):
+    for tipo in tipos_ordenados:
         resumen.append({"tipo_via": tipo, "aristas": total[tipo], "con_maxspeed": len(conocidas[tipo]),
                         "velocidad_imputada_kmh": round(reemplazo[tipo], 2), "fuente": fuente[tipo]})
     return resumen
