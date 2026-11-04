@@ -1,0 +1,12 @@
+osmnx==2.1.1
+networkx==3.6.1
+scipy==1.17.1
+numpy
+pandas
+matplotlib
+pyproj
+folium
+streamlit
+streamlit-folium
+pytest
+psutil
