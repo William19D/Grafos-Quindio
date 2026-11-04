@@ -18,7 +18,10 @@ export function useAnimacion(total: number, segundos: number) {
     const inicio = performance.now()
     const control = { cuadro: 0 }
     const avanzar = (ahora: number) => {
-      const siguiente = Math.min(total, Math.round(pasoInicial + (ahora - inicio) * pasosPorMs))
+      // La marca de tiempo de requestAnimationFrame es el inicio del cuadro y puede ser un poco
+      // anterior a `inicio`: sin el Math.max(0, ...) el primer paso saldría negativo.
+      const transcurrido = Math.max(0, ahora - inicio)
+      const siguiente = Math.min(total, Math.round(pasoInicial + transcurrido * pasosPorMs))
       setPaso(siguiente)
       if (siguiente >= total) {
         setReproduciendo(false)
