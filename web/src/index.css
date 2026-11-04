@@ -1,0 +1,134 @@
+@import "tailwindcss";
+@import "@fontsource-variable/archivo/wdth.css";
+@import "leaflet/dist/leaflet.css";
+
+/* Paleta del Paisaje Cultural Cafetero. Contrastes medidos sobre blanco (ver DESIGN.md). */
+@theme {
+  --font-sans: "Archivo Variable", system-ui, sans-serif;
+
+  --color-suelo: #f2f4ee;        /* neblina de la cordillera: fondo de la app */
+  --color-superficie: #ffffff;   /* paneles */
+  --color-hundido: #e8ebe2;      /* un paso de tono: pozos, filas resaltadas */
+  --color-activo: #dde3d5;       /* pestaña o fila elegida */
+  --color-borde: #d3d9cb;        /* borde de paneles */
+  --color-regla: #e5e9df;        /* reglas de tablas */
+  --color-control: #7d8676;      /* borde de campos (3,8:1) */
+
+  --color-tinta: #16201a;        /* texto principal (16,7:1) */
+  --color-tinta-2: #46524a;      /* texto secundario (8,2:1) */
+  --color-tinta-3: #5a655c;      /* notas y ejes (6,1:1) */
+
+  --color-primario: #1c3a29;     /* verde cordillera: la acción principal */
+  --color-primario-hover: #2b5139;
+
+  --color-cereza: #a63220;       /* cereza de café: el algoritmo propio / óptimo (6,8:1) */
+  --color-cereza-palido: #f6e2dc;
+  --color-azul: #2b5c7a;         /* cielo de montaña: el comparador / la voraz (7,2:1) */
+  --color-azul-palido: #dce8ef;
+  --color-guadua: #3c7334;       /* fincas */
+  --color-tostado: #7a4b1e;      /* acopio */
+
+  --color-positivo: #1f6b3b;
+  --color-positivo-palido: #dcefe0;
+  --color-negativo: #96201a;
+  --color-negativo-palido: #fae3df;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+    /* Que la barra superior fija y el botón fijo del itinerario no tapen el campo enfocado */
+    scroll-padding: 7rem 0 5rem;
+  }
+  a, button, input, label, summary {
+    touch-action: manipulation; /* sin la espera del doble toque en el teléfono */
+  }
+  body {
+    @apply bg-suelo text-tinta font-sans antialiased;
+    font-size: 15px;
+    line-height: 1.5;
+    scrollbar-color: var(--color-control) var(--color-suelo);
+  }
+  h1, h2, h3 {
+    font-stretch: 88%;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  ::selection {
+    background: var(--color-cereza-palido);
+    color: var(--color-tinta);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  input, button, select {
+    accent-color: var(--color-primario);
+    caret-color: var(--color-cereza);
+  }
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Los dos botones de la app. Uno solo lleno por vista; deshabilitado se ve igual en todas. */
+  .boton-primario {
+    @apply h-10 rounded-md bg-primario px-4 font-medium text-white transition-colors hover:bg-primario-hover active:bg-tinta disabled:cursor-not-allowed disabled:bg-hundido disabled:text-tinta-2;
+  }
+  .boton-secundario {
+    @apply h-10 rounded-md border border-control bg-superficie px-4 transition-colors hover:bg-hundido active:bg-activo;
+  }
+  /* Cifras con dígitos del mismo ancho, para que no "bailen" al cambiar */
+  .cifra {
+    font-variant-numeric: tabular-nums;
+    font-stretch: 92%;
+  }
+  .leaflet-container {
+    font-family: var(--font-sans);
+    background: var(--color-hundido);
+  }
+  /* Mapa base apagado: el color queda para los datos (rutas, envolvente, lugares) */
+  .leaflet-tile-pane {
+    filter: saturate(0.3) contrast(0.92) brightness(1.04);
+  }
+  .leaflet-container a {
+    color: var(--color-azul);
+  }
+  /* Etiquetas del mapa con la letra, la tinta y el borde de la app (no las de Leaflet por defecto) */
+  .leaflet-tooltip {
+    border: 1px solid var(--color-borde);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(22, 32, 26, 0.12);
+    color: var(--color-tinta);
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+  .leaflet-control-zoom a {
+    color: var(--color-tinta);
+  }
+  /* Número de orden de visita sobre el mapa del itinerario */
+  .marca-orden {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--color-cereza);
+    color: #fff;
+    font: 600 12px/1 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    border: 2px solid #fff;
+  }
+  .marca-orden.partida {
+    background: var(--color-tinta);
+  }
+}
