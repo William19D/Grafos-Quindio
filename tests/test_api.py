@@ -42,6 +42,13 @@ def test_ruta_coincide_con_dijkstra_directo(cliente):
     assert ruta["distancia_km"] > 0
 
 
+def test_polilinea_sigue_la_forma_de_la_via(cliente):
+    """Con la geometría de R1 la polilínea tiene más puntos que nodos (curvas de la vía)."""
+    ruta = cliente.get("/api/ruta", params={"origen": "ARM", "destino": "BAM"}).json()
+    assert len(estado["geometrias"]) > 0
+    assert len(ruta["polilinea"]) > ruta["nodos_ruta"]
+
+
 def test_ruta_id_inexistente(cliente):
     assert cliente.get("/api/ruta", params={"origen": "ARM", "destino": "XXX"}).status_code == 404
 
