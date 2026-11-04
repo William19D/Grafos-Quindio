@@ -131,12 +131,17 @@ def dijkstra_lineal(adj, origen, destino, traza=None):
     return distancia[destino], reconstruir_ruta(predecesor, origen, destino), nodos_explorados
 
 
-def dijkstra_cola(adj, origen, destino=None, traza=None):
+def dijkstra_cola(adj, origen, destino=None, traza=None, arbol=None):
     """Dijkstra con cola de prioridad (montículo binario propio) e inserción perezosa.
 
     Con destino: devuelve (tiempo_s, ruta, nodos_explorados); (inf, [], explorados) si no se alcanza.
     Sin destino (uno a todos): devuelve (distancias, predecesores, nodos_explorados), donde
     distancias[v] es el tiempo mínimo de origen a v (inf si no se alcanza).
+
+    arbol: lista opcional. Si no es None, cada vez que un nodo se explora (paso 2c) se agrega
+    (predecesor, nodo, distancia_definitiva) en el orden en que salió de la cola. Esas parejas
+    predecesor -> nodo forman el árbol de caminos mínimos que Dijkstra va construyendo; la app lo
+    anima para mostrar cómo avanza la búsqueda. Como traza, se deja en None al medir.
 
     Idea: igual que la versión lineal, pero el nodo no explorado de menor distancia se obtiene
     del montículo. "Inserción perezosa": en vez de disminuir la prioridad de un nodo que ya está
@@ -191,6 +196,8 @@ def dijkstra_cola(adj, origen, destino=None, traza=None):
         nodos_explorados = nodos_explorados + 1
         if traza is not None:
             traza.append(f"Exploro {nodo} (distancia definitiva {distancia_extraida})")
+        if arbol is not None:
+            arbol.append((predecesor[nodo], nodo, distancia_extraida))
 
         # Paso 2d: llegamos al destino
         if nodo == destino:
