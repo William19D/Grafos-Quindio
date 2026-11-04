@@ -1121,6 +1121,7 @@ mismos CSV y PNG de este documento.
 |---|---|---|---|
 | `GET /api/lugares` | — | Lista los 46 lugares con su nodo | `id, nombre, categoria, municipio, lat, lon, nodo, dist_nodo_m, duracion_visita_min` |
 | `GET /api/ruta?origen=ID&destino=ID` | ids del catálogo | `dijkstra_cola` entre los nodos de los dos lugares (404 si un id no existe) | `tiempo_s`, `tiempo_min`, `distancia_km`, `nodos_explorados`, `nodos_ruta`, `ms`, `polilinea` |
+| `GET /api/arbol?origen=ID&destino=ID` | ids del catálogo | `dijkstra_cola(..., arbol=...)`: cada nodo explorado con su predecesor, en orden de salida de la cola | `tramos`, `tiempos_s`, `nodos_explorados`, `ruta` (la app anima el árbol de caminos mínimos) |
 | `GET /api/envolvente` | — | `quickhull` sobre los nodos en UTM | `vertices` (lat/lon y UTM, antihorario), `n_vertices`, `n_puntos`, `area_km2`, `ms` |
 | `POST /api/itinerario` | `{"partida": "ARM", "atractivos": [...]}` (6 a 8, sin repetidos, con duración; si no, 422 con el error en español) | `held_karp` y `vecino_mas_cercano` sobre la submatriz | para cada método: orden, filas del anexo con «Regreso», totales, `jornada_h`, `cabe` (≤ 11 h), tramos con polilínea y `ms`; además `diferencia_min` y `diferencia_pct` de los desplazamientos |
 | `GET /api/resultados` | — | Lee los CSV de `resultados/` (menos la matriz) y lista las figuras | `tablas` (`archivo, requerimiento, titulo, columnas, filas`) y `figuras` (`url`) |
