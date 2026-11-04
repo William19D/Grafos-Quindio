@@ -1,0 +1,15 @@
+{
+  "lugares": 46,
+  "dijkstras_uno_a_todos": 46,
+  "tiempo_construccion_ms": 2612.5,
+  "tiempo_por_fila_ms": 56.79,
+  "asimetria_max_s": 545.33,
+  "par_asimetria_max": "FIL <-> BBR",
+  "t_ida_s": 1213.11,
+  "t_vuelta_s": 1758.44,
+  "asimetria_media_s": 50.29,
+  "asimetria_relativa_max": 0.6574,
+  "pares_distintos": 1035,
+  "tiempo_max_s": 9382.75,
+  "dif_max_vs_networkx_s": 0.0
+}
