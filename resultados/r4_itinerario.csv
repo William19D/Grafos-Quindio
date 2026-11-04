@@ -1,0 +1,11 @@
+orden,lugar,nombre,desplazamiento_desde_anterior_min,visita_min,tiempo_acumulado_h
+1,CLC,Cementerio Libre de Circasia,21.8,90,1.86
+2,CIL,Mirador Colina Iluminada de Filandia,26.9,45,3.06
+3,ACR,Mirador Alto de la Cruz,33.7,45,4.37
+4,CRS,Calle Real de Salento,0.3,90,5.88
+5,MOQ,Museo del Oro Quimbaya,29.5,90,7.87
+6,FUN,Parque de los Fundadores,5.6,90,9.46
+Regreso,ARM,Plaza de Bolívar de Armenia,3.8,—,9.53
+Total visitas (min),,,,450,
+Total desplazamientos (min),,,121.7,,
+Duración de la jornada (h),,,,,9.53
