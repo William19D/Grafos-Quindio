@@ -22,7 +22,9 @@ from pyproj import Transformer  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 from pydantic import BaseModel  # noqa: E402
 
-from quindio.config import CRS_UTM, FIGURAS, LUGARES_NODOS, NODOS, RESULTADOS  # noqa: E402
+import json  # noqa: E402
+
+from quindio.config import CRS_UTM, FIGURAS, GEOMETRIAS, LUGARES_NODOS, NODOS, RESULTADOS  # noqa: E402
 from quindio.dijkstra import dijkstra_cola  # noqa: E402
 from quindio.envolvente import area_km2, preparar_puntos, quickhull  # noqa: E402
 from quindio.red import cargar_grafo  # noqa: E402
@@ -81,6 +83,11 @@ def cargar_todo():
     estado["lugar"] = {lugar["id"]: lugar for lugar in estado["lugares"]}
     _ids, estado["matriz"] = leer_matriz()
     estado["puntos_utm"] = leer_puntos_utm()
+    # Forma real de cada tramo ("u,v" -> [[lat, lon], ...]); sin ella la ruta se dibuja recta
+    # entre intersecciones. La genera experimentos/r1_geometrias.py.
+    estado["geometrias"] = {}
+    if GEOMETRIAS.exists():
+        estado["geometrias"] = json.loads(GEOMETRIAS.read_text(encoding="utf-8"))
     estado["rutas_guardadas"] = {}  # (nodo_a, nodo_b) -> resultado de ruta_entre_nodos
 
 
@@ -126,13 +133,28 @@ def ruta_entre_nodos(nodo_origen, nodo_destino):
     inicio = time.perf_counter()
     tiempo_s, ruta, explorados = dijkstra_cola(adj, nodo_origen, nodo_destino)
     ms = (time.perf_counter() - inicio) * 1000
-    polilinea = []
-    for nodo in ruta:
-        lat, lon = estado["coords"][nodo]
-        polilinea.append([lat, lon])
     return {"tiempo_s": tiempo_s, "distancia_km": distancia_de_ruta(adj, ruta) / 1000,
             "nodos_explorados": explorados, "nodos_ruta": len(ruta), "ms": ms,
-            "polilinea": polilinea}
+            "polilinea": polilinea_de_ruta(ruta)}
+
+
+def polilinea_de_ruta(ruta):
+    """Puntos [lat, lon] para dibujar la ruta siguiendo la vía: por cada tramo u->v se agregan
+    los puntos intermedios de su forma real y luego el nodo v (si el tramo es recto, solo v)."""
+    if not ruta:
+        return []
+    lat, lon = estado["coords"][ruta[0]]
+    polilinea = [[lat, lon]]
+    for posicion in range(len(ruta) - 1):
+        clave = f"{ruta[posicion]},{ruta[posicion + 1]}"
+        if clave in estado["geometrias"]:
+            puntos = estado["geometrias"][clave]
+            # el primero y el último de la forma son u y v; se usan las coordenadas exactas del nodo
+            for indice in range(1, len(puntos) - 1):
+                polilinea.append(puntos[indice])
+        lat, lon = estado["coords"][ruta[posicion + 1]]
+        polilinea.append([lat, lon])
+    return polilinea
 
 
 def ruta_guardada(nodo_origen, nodo_destino):
