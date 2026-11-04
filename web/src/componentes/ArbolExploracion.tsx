@@ -19,9 +19,12 @@ type Props = {
   paso: number // cuántos tramos dibujar (0..tramos.length)
 }
 
+// Índice de franja de color (0..4) según qué fracción del tiempo total lleva el nodo.
+// Siempre devuelve un índice válido, aunque el dato venga raro (NaN, negativo, > total).
 function franjaDe(tiempo: number, tiempoTotal: number) {
   const fraccion = tiempoTotal > 0 ? tiempo / tiempoTotal : 0
   const indice = Math.floor(fraccion * TONOS_ARBOL.length)
+  if (!Number.isFinite(indice) || indice < 0) return 0
   return Math.min(indice, TONOS_ARBOL.length - 1)
 }
 
@@ -47,12 +50,14 @@ export function ArbolExploracion({ tramos, tiempos, tiempoTotal, paso }: Props) 
 
   // Al avanzar se agregan solo los tramos nuevos; al retroceder se reconstruye desde cero
   useEffect(() => {
-    if (paso < dibujados.current) {
+    // Nunca leer más allá de los datos (p. ej. si llega un paso de un árbol anterior)
+    const hasta = Math.max(0, Math.min(paso, tramos.length, tiempos.length))
+    if (hasta < dibujados.current || porFranja.current.length !== TONOS_ARBOL.length) {
       porFranja.current = TONOS_ARBOL.map(() => [])
       dibujados.current = 0
     }
     const tocadas = new Set<number>()
-    for (let i = dibujados.current; i < paso; i++) {
+    for (let i = dibujados.current; i < hasta; i++) {
       const franja = franjaDe(tiempos[i], tiempoTotal)
       porFranja.current[franja].push(tramos[i])
       tocadas.add(franja)
@@ -61,7 +66,7 @@ export function ArbolExploracion({ tramos, tiempos, tiempoTotal, paso }: Props) 
       // reconstrucción: todas las franjas
       TONOS_ARBOL.forEach((_, franja) => tocadas.add(franja))
     }
-    dibujados.current = paso
+    dibujados.current = hasta
     tocadas.forEach((franja) => capas.current[franja]?.setLatLngs(porFranja.current[franja]))
   }, [paso, tramos, tiempos, tiempoTotal])
 
