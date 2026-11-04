@@ -1,7 +1,9 @@
 // Vista 1 - Ruta más rápida entre dos lugares (Dijkstra con cola de prioridad, R2).
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CircleMarker, Polyline, Tooltip } from 'react-leaflet'
-import { pedirRuta, type Lugar, type Ruta } from '../api'
+import type { LatLngBoundsExpression } from 'leaflet'
+import { pedirArbol, pedirRuta, type Arbol, type Lugar, type Ruta } from '../api'
+import { ArbolExploracion } from '../componentes/ArbolExploracion'
 import { Aviso } from '../componentes/Aviso'
 import { Cifra, CifraPrincipal, Cifras } from '../componentes/Cifras'
 import { ConMapa } from '../componentes/ConMapa'
@@ -9,6 +11,22 @@ import { Mapa } from '../componentes/Mapa'
 import { SelectorLugar } from '../componentes/SelectorLugar'
 import { COLOR } from '../colores'
 import { numero } from '../formato'
+import { ControlesArbol } from './ruta/ControlesArbol'
+import { useAnimacion } from './ruta/useAnimacion'
+
+// Rectángulo que encierra todos los tramos del árbol (para encuadrar el mapa al mostrarlo)
+function limitesDelArbol(arbol: Arbol): LatLngBoundsExpression {
+  let minLat = Infinity, minLon = Infinity, maxLat = -Infinity, maxLon = -Infinity
+  for (const tramo of arbol.tramos) {
+    for (const [lat, lon] of tramo) {
+      if (lat < minLat) minLat = lat
+      if (lat > maxLat) maxLat = lat
+      if (lon < minLon) minLon = lon
+      if (lon > maxLon) maxLon = lon
+    }
+  }
+  return [[minLat, minLon], [maxLat, maxLon]]
+}
 
 export function VistaRuta({ lugares }: { lugares: Lugar[] }) {
   const [origen, setOrigen] = useState('ARM')
@@ -16,10 +34,38 @@ export function VistaRuta({ lugares }: { lugares: Lugar[] }) {
   const [ruta, setRuta] = useState<Ruta | null>(null)
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
+  // Árbol de exploración (se pide aparte: pesa más y solo se necesita al querer verlo)
+  const [arbol, setArbol] = useState<Arbol | null>(null)
+  const [cargandoArbol, setCargandoArbol] = useState(false)
+  const [segundos, setSegundos] = useState(10)
+  const animacion = useAnimacion(arbol ? arbol.tramos.length : 0, segundos)
+  const limitesArbol = useMemo(() => (arbol ? limitesDelArbol(arbol) : undefined), [arbol])
+
+  async function verArbol() {
+    if (!ruta) return
+    setCargandoArbol(true)
+    setError('')
+    try {
+      const nuevo = await pedirArbol(ruta.origen.id, ruta.destino.id)
+      setArbol(nuevo)
+      animacion.setPaso(0)
+      animacion.setReproduciendo(true)
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setCargandoArbol(false)
+    }
+  }
+
+  function ocultarArbol() {
+    animacion.reiniciar()
+    setArbol(null)
+  }
 
   async function calcular() {
     setCargando(true)
     setError('')
+    ocultarArbol()
     try {
       setRuta(await pedirRuta(origen, destino))
     } catch (e) {
@@ -91,6 +137,38 @@ export function VistaRuta({ lugares }: { lugares: Lugar[] }) {
           <p className="text-[13px] text-tinta-3">
             El tiempo supone la velocidad máxima de cada vía (o la imputada por tipo de vía en R1). Los ms cuentan solo el algoritmo, no la red.
           </p>
+
+          <div className="space-y-3 border-t border-regla pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-lg font-semibold">Árbol de exploración</h2>
+              {arbol ? (
+                <button type="button" onClick={ocultarArbol} className="boton-secundario">
+                  Ocultar árbol
+                </button>
+              ) : (
+                <button type="button" onClick={verArbol} disabled={cargandoArbol || desactualizada} className="boton-secundario">
+                  {cargandoArbol ? 'Cargando…' : 'Ver cómo explora Dijkstra'}
+                </button>
+              )}
+            </div>
+            {arbol ? (
+              <ControlesArbol
+                arbol={arbol}
+                paso={animacion.paso}
+                reproduciendo={animacion.reproduciendo}
+                segundos={segundos}
+                alternar={animacion.alternar}
+                reiniciar={animacion.reiniciar}
+                saltarA={animacion.saltarA}
+                cambiarVelocidad={setSegundos}
+              />
+            ) : (
+              <p className="text-[13px] text-tinta-3">
+                Muestra, paso a paso, los {numero(ruta.nodos_explorados)} nodos que Dijkstra sacó de la cola antes de fijar el destino y el árbol de
+                caminos mínimos que fue formando.
+              </p>
+            )}
+          </div>
         </div>
       ) : null}
     </>
@@ -98,14 +176,28 @@ export function VistaRuta({ lugares }: { lugares: Lugar[] }) {
 
   const inicio = ruta?.polilinea[0]
   const fin = ruta?.polilinea[ruta.polilinea.length - 1]
+  // Con el árbol visible, la ruta aparece cuando la exploración llega al destino
+  const arbolTerminado = arbol !== null && animacion.paso >= arbol.tramos.length
+  const mostrarRuta = arbol === null || arbolTerminado
+  const ultimoTramo = arbol && animacion.paso > 0 ? arbol.tramos[animacion.paso - 1] : null
+  const frente = ultimoTramo ? ultimoTramo[ultimoTramo.length - 1] : null
+  const limites = limitesArbol ?? (ruta && ruta.polilinea.length > 1 ? ruta.polilinea : undefined)
   return (
     <ConMapa panel={panel}>
-      <Mapa etiqueta="Mapa de la ruta" limites={ruta && ruta.polilinea.length > 1 ? ruta.polilinea : undefined}>
+      <Mapa etiqueta="Mapa de la ruta" limites={limites}>
+        {arbol ? <ArbolExploracion tramos={arbol.tramos} tiempos={arbol.tiempos_s} tiempoTotal={arbol.tiempo_s} paso={animacion.paso} /> : null}
+        {frente && !arbolTerminado ? (
+          <CircleMarker center={frente} radius={5} pathOptions={{ color: '#fff', weight: 2, fillColor: COLOR.tinta, fillOpacity: 1 }} />
+        ) : null}
         {ruta ? (
           <>
             {/* Borde blanco debajo de la línea para que se lea sobre cualquier fondo */}
-            <Polyline positions={ruta.polilinea} pathOptions={{ color: '#ffffff', weight: 9, opacity: 0.9 }} />
-            <Polyline positions={ruta.polilinea} pathOptions={{ color: COLOR.cereza, weight: 5 }} />
+            {mostrarRuta ? (
+              <>
+                <Polyline positions={ruta.polilinea} pathOptions={{ color: '#ffffff', weight: 9, opacity: 0.9 }} />
+                <Polyline positions={ruta.polilinea} pathOptions={{ color: COLOR.cereza, weight: 5 }} />
+              </>
+            ) : null}
             {inicio ? (
               <CircleMarker center={inicio} radius={8} pathOptions={{ color: '#fff', weight: 2, fillColor: COLOR.tinta, fillOpacity: 1 }}>
                 {/* Etiquetas fijas: en el teléfono no hay "pasar el ratón", y el color solo no dice cuál es cuál */}
