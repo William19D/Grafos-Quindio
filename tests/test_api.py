@@ -49,6 +49,18 @@ def test_polilinea_sigue_la_forma_de_la_via(cliente):
     assert len(ruta["polilinea"]) > ruta["nodos_ruta"]
 
 
+def test_arbol_de_exploracion(cliente):
+    """Un tramo por nodo explorado (menos el origen), en orden de distancia, y termina en el destino."""
+    r = cliente.get("/api/arbol", params={"origen": "ARM", "destino": "SAL"})
+    assert r.status_code == 200
+    arbol = r.json()
+    ruta = cliente.get("/api/ruta", params={"origen": "ARM", "destino": "SAL"}).json()
+    assert arbol["nodos_explorados"] == ruta["nodos_explorados"]
+    assert len(arbol["tramos"]) == arbol["nodos_explorados"] - 1
+    assert arbol["tiempos_s"] == sorted(arbol["tiempos_s"])
+    assert arbol["tiempo_s"] == pytest.approx(ruta["tiempo_s"])
+
+
 def test_ruta_id_inexistente(cliente):
     assert cliente.get("/api/ruta", params={"origen": "ARM", "destino": "XXX"}).status_code == 404
 
