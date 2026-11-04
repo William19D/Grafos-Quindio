@@ -35,7 +35,7 @@ experimentos/        un script por experimento + reproducir.py
 specs/               especificaciones (Spec-Driven Development) de cada requerimiento
 tests/               pruebas con pytest
 data/catalogo.csv    catálogo de 46 lugares
-data/processed/      red procesada (grafo_scc.graphml, nodos.csv, aristas.csv, lugares_nodos.csv)
+data/processed/      red procesada (grafo_scc.graphml, nodos.csv, aristas.csv, geometria_aristas.json, lugares_nodos.csv)
 data/raw/            red cruda descargada (no se sube al repositorio)
 resultados/          CSV y JSON de los experimentos, matriz_tiempos.csv, envolvente.json
 resultados/figuras/  gráficas PNG generadas a partir de los CSV

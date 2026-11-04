@@ -77,7 +77,7 @@ flowchart LR
 | Descarga | OpenStreetMap (Overpass) | `ox.graph_from_place("Quindío, Colombia", network_type="drive")` con servidores alternos (`src/quindio/descarga.py`) | `data/raw/quindio_drive.graphml`, `data/raw/descarga.json` | R1 |
 | Catálogo | Nominatim (OSM) y cuaderno base | `data/catalogo.csv`, verificado por `experimentos/catalogo.py` | 46 lugares con coordenadas y duración de visita | R1.4, R2, R4 |
 | R1.2–R1.3 | red cruda | `red.asignar_pesos` + `ox.truncate.largest_component(G, strongly=True)` (`experimentos/r1_red.py`) | componente con pesos | R1.5 |
-| R1.5 | componente | `experimentos/r1_red.py` | `data/processed/grafo_scc.graphml`, `nodos.csv` (lat, lon, UTM), `aristas.csv` (u, v, distancia_m, tiempo_s, velocidad_kmh) | R1.4, R2, R3, app |
+| R1.5 | componente | `experimentos/r1_red.py`, `experimentos/r1_geometrias.py` | `data/processed/grafo_scc.graphml`, `nodos.csv` (lat, lon, UTM), `aristas.csv` (u, v, distancia_m, tiempo_s, velocidad_kmh), `geometria_aristas.json` (forma real de cada tramo, solo para dibujar) | R1.4, R2, R3, app |
 | R1.4 | `catalogo.csv` + `nodos.csv` | `red.asociar_lugares` (`experimentos/r1_lugares.py`) | `data/processed/lugares_nodos.csv` (lugar → nodo) | R2, app |
 | R2 | `aristas.csv` (vía `red.cargar_grafo`) + `lugares_nodos.csv` | `dijkstra_cola` sin destino desde cada lugar (`experimentos/r2_matriz.py`) | `resultados/matriz_tiempos.csv` | R4, app |
 | R3 | `nodos.csv` (x_utm, y_utm) | `envolvente.quickhull` (`experimentos/r3_envolvente.py`) | `resultados/envolvente.json` (14 vértices, lat/lon y UTM) | documento, figura |
@@ -449,6 +449,12 @@ los tiempos entre lugares (mediana 43.9 min).
 - `data/processed/aristas.csv`: `u,v,distancia_m,tiempo_s,velocidad_kmh` (19 999 filas). La
   MultiDiGraph tiene 137 aristas paralelas (mismo u→v, otro tramo físico); para caminos mínimos
   solo importa la más rápida, así que se conserva la de menor tiempo (20 136 → 19 999).
+- `data/processed/geometria_aristas.json` (de `r1_geometrias.py`): OSMnx simplifica la red, así
+  que cada arista va de una intersección a otra y guarda la forma de la vía (curvas intermedias)
+  en su atributo `geometry`. Este archivo conserva esa forma ("u,v" → lista de [lat, lon]) para
+  11 374 de las 19 999 aristas (las demás son rectas). No interviene en ningún algoritmo: solo
+  lo usa la aplicación para que la ruta dibujada siga la vía en lugar de unir intersecciones
+  con líneas rectas.
 - `data/processed/lugares_nodos.csv` (de `r1_lugares.py`) y `data/processed/descarga.json`.
 - `red.cargar_grafo()` lee los CSV y devuelve `adj[u] = [(v, tiempo_s, distancia_m), ...]` en
   0.19 s.
