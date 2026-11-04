@@ -1,0 +1,126 @@
+{
+  "k": 5,
+  "semilla": 2530,
+  "partida": "ARM",
+  "lugares": {
+    "ARM": "Plaza de Bolívar de Armenia",
+    "DPA": "Hotel Decameron Panaca",
+    "SAL": "Plaza de Bolívar de Salento",
+    "TEU": "Trilladora Europa",
+    "PVI": "Parque de la Vida",
+    "REC": "RECUCA - Recorrido de la Cultura Cafetera"
+  },
+  "indices": {
+    "0": "ARM",
+    "1": "DPA",
+    "2": "SAL",
+    "3": "TEU",
+    "4": "PVI",
+    "5": "REC"
+  },
+  "optimo_held_karp": {
+    "recorrido": [
+      "ARM",
+      "TEU",
+      "REC",
+      "DPA",
+      "SAL",
+      "PVI",
+      "ARM"
+    ],
+    "costo_s": 12390.26,
+    "costo_min": 206.5,
+    "tramos": [
+      {
+        "desde": "ARM",
+        "hacia": "TEU",
+        "tiempo_min": 5.2
+      },
+      {
+        "desde": "TEU",
+        "hacia": "REC",
+        "tiempo_min": 21.7
+      },
+      {
+        "desde": "REC",
+        "hacia": "DPA",
+        "tiempo_min": 64.8
+      },
+      {
+        "desde": "DPA",
+        "hacia": "SAL",
+        "tiempo_min": 75.6
+      },
+      {
+        "desde": "SAL",
+        "hacia": "PVI",
+        "tiempo_min": 34.8
+      },
+      {
+        "desde": "PVI",
+        "hacia": "ARM",
+        "tiempo_min": 4.6
+      }
+    ]
+  },
+  "vecino_mas_cercano": {
+    "recorrido": [
+      "ARM",
+      "PVI",
+      "TEU",
+      "REC",
+      "SAL",
+      "DPA",
+      "ARM"
+    ],
+    "costo_s": 13057.09,
+    "costo_min": 217.6,
+    "tramos": [
+      {
+        "desde": "ARM",
+        "hacia": "PVI",
+        "tiempo_min": 4.9
+      },
+      {
+        "desde": "PVI",
+        "hacia": "TEU",
+        "tiempo_min": 7.7
+      },
+      {
+        "desde": "TEU",
+        "hacia": "REC",
+        "tiempo_min": 21.7
+      },
+      {
+        "desde": "REC",
+        "hacia": "SAL",
+        "tiempo_min": 63.4
+      },
+      {
+        "desde": "SAL",
+        "hacia": "DPA",
+        "tiempo_min": 76.2
+      },
+      {
+        "desde": "DPA",
+        "hacia": "ARM",
+        "tiempo_min": 43.6
+      }
+    ],
+    "traza": [
+      "paso 1: desde 0, opciones [1:2658.48, 2:2301.49, 3:309.26, 4:292.48, 5:1560.27] -> voy a 4 (+292.48)",
+      "paso 2: desde 4, opciones [1:2829.64, 2:2086.07, 3:464.69, 5:1715.71] -> voy a 3 (+464.69)",
+      "paso 3: desde 3, opciones [1:2582.44, 2:2538.74, 5:1303.02] -> voy a 5 (+1303.02)",
+      "paso 4: desde 5, opciones [1:3885.32, 2:3806.64] -> voy a 2 (+3806.64)",
+      "paso 5: desde 2, opciones [1:4574.14] -> voy a 1 (+4574.14)",
+      "regreso: 1 -> 0 (+2616.12); total = 13057.09"
+    ]
+  },
+  "brecha_pct": 5.38,
+  "primer_desvio": {
+    "posicion": 1,
+    "voraz_elige": "PVI",
+    "optimo_elige": "TEU",
+    "desde": "ARM"
+  }
+}
