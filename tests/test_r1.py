@@ -142,3 +142,15 @@ def test_cargar_grafo_completo_y_rapido():
     assert v in adj and t > 0 and d > 0
     # tiempo = distancia / velocidad con velocidades razonables (km/h)
     assert all(5 <= dd / tt * 3.6 <= 130 for l in adj.values() for _, tt, dd in l)
+
+
+def test_nodo_mas_cercano_y_leer_numero_metodo_largo():
+    """Ejemplo de docs/paso_a_paso_R1.md: el punto (120, 160) queda a 44.7 m del nodo C."""
+    from quindio.red import leer_numero, nodo_mas_cercano
+    pasos = []
+    nodo, d = nodo_mas_cercano(120.0, 160.0, ["A", "B", "C", "D"], [0.0, 300.0, 100.0, 400.0],
+                               [0.0, 0.0, 200.0, 400.0], traza=pasos)
+    assert nodo == "C" and d == pytest.approx(44.72, abs=0.01)
+    assert len(pasos) == 4  # una línea de traza por nodo revisado
+    assert leer_numero("12,5") == 12.5 and leer_numero("40") == 40
+    assert leer_numero("5.") is None and leer_numero("1.2.3") is None and leer_numero("") is None
