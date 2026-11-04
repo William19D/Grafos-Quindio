@@ -1,0 +1,12 @@
+tipo_via,aristas,con_maxspeed,velocidad_imputada_kmh,fuente
+residential,13455,293,31.37,media maxspeed del tipo
+unclassified,2459,248,30.48,media maxspeed del tipo
+tertiary,1843,318,30.52,media maxspeed del tipo
+secondary,1282,157,36.31,media maxspeed del tipo
+primary,564,166,44.16,media maxspeed del tipo
+trunk,420,120,34.07,media maxspeed del tipo
+secondary_link,48,4,30.0,media maxspeed del tipo
+trunk_link,39,1,20.0,media maxspeed del tipo
+primary_link,36,0,40,tabla normativa
+ladder,6,0,30,tabla normativa
+tertiary_link,5,0,30,tabla normativa

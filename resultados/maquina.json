@@ -1,0 +1,7 @@
+{
+  "procesador": "12th Gen Intel(R) Core(TM) i5-12450H",
+  "nucleos_logicos": 12,
+  "ram_gb": 31.6,
+  "sistema_operativo": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.15"
+}

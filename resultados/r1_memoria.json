@@ -1,0 +1,28 @@
+{
+  "supuestos": {
+    "matriz_bajo_nivel": "V*V celdas de 8 B (tiempo float32 + distancia float32)",
+    "listas_bajo_nivel": "E entradas de 12 B (vecino int32 + tiempo float32 + distancia float32) + V punteros de 8 B",
+    "matriz_python": "V listas de V punteros de 8 B + 56 B de cabecera por lista (sin contar los float de las celdas con arista)",
+    "listas_python_medido": "dict {nodo: [(vecino, tiempo, distancia), ...]} medido con sys.getsizeof",
+    "MB": "10^6 bytes"
+  },
+  "red_descargada": {
+    "V": 8808,
+    "E": 20157,
+    "matriz_bajo_nivel_mb": 620.646912,
+    "listas_bajo_nivel_mb": 0.312348,
+    "matriz_python_mb": 621.14016
+  },
+  "componente": {
+    "V": 8792,
+    "E": 20136,
+    "matriz_bajo_nivel_mb": 618.394112,
+    "listas_bajo_nivel_mb": 0.311968,
+    "matriz_python_mb": 618.886464
+  },
+  "aristas_sin_paralelas": 19999,
+  "aristas_paralelas_descartadas": 137,
+  "listas_python_medido_mb": 4.217932,
+  "matriz_python_medida_escalada_mb": 623.4074330659839,
+  "tiempo_cargar_grafo_s": 0.193
+}
