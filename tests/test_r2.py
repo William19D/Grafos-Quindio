@@ -113,3 +113,20 @@ def test_monticulo_igual_que_heapq():
     assert salida_m == salida_h and len(h) == 0
     with pytest.raises(IndexError):
         m.extraer_minimo()
+
+
+def test_arbol_de_exploracion_en_orden_y_sin_cambiar_resultado():
+    """El árbol anota cada nodo explorado una vez, en orden de distancia, con su predecesor."""
+    adj = _adj(ARISTAS_MANO)
+    arbol = []
+    assert dijkstra_cola(adj, "A", "F", arbol=arbol) == dijkstra_cola(adj, "A", "F")
+    tiempo, ruta, explorados = dijkstra_cola(adj, "A", "F")
+    assert len(arbol) == explorados
+    assert arbol[0] == (None, "A", 0)
+    assert arbol[-1][1] == "F" and arbol[-1][2] == tiempo
+    distancias = [d for _, _, d in arbol]
+    assert distancias == sorted(distancias)  # sale en orden no decreciente (invariante)
+    vistos = {"A"}
+    for pred, nodo, _ in arbol[1:]:
+        assert pred in vistos  # el padre ya estaba fijado: es un árbol que crece desde el origen
+        vistos.add(nodo)
