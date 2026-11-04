@@ -1,5 +1,5 @@
 // Vista 1 - Ruta más rápida entre dos lugares (Dijkstra con cola de prioridad, R2).
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CircleMarker, Polyline, Tooltip } from 'react-leaflet'
 import type { LatLngBoundsExpression } from 'leaflet'
 import { pedirArbol, pedirRuta, type Arbol, type Lugar, type Ruta } from '../api'
@@ -41,12 +41,19 @@ export function VistaRuta({ lugares }: { lugares: Lugar[] }) {
   const animacion = useAnimacion(arbol ? arbol.tramos.length : 0, segundos)
   const limitesArbol = useMemo(() => (arbol ? limitesDelArbol(arbol) : undefined), [arbol])
 
+  // Número de la última petición del árbol: si mientras tanto se calculó otra ruta o se ocultó,
+  // la respuesta vieja se ignora (si no, se dibujaría el árbol de otra ruta)
+  const peticionArbol = useRef(0)
+
   async function verArbol() {
     if (!ruta) return
+    const numeroPeticion = peticionArbol.current + 1
+    peticionArbol.current = numeroPeticion
     setCargandoArbol(true)
     setError('')
     try {
       const nuevo = await pedirArbol(ruta.origen.id, ruta.destino.id)
+      if (numeroPeticion !== peticionArbol.current) return
       setArbol(nuevo)
       animacion.setPaso(0)
       animacion.setReproduciendo(true)
@@ -58,6 +65,7 @@ export function VistaRuta({ lugares }: { lugares: Lugar[] }) {
   }
 
   function ocultarArbol() {
+    peticionArbol.current = peticionArbol.current + 1
     animacion.reiniciar()
     setArbol(null)
   }
