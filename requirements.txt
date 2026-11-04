@@ -5,8 +5,8 @@ numpy
 pandas
 matplotlib
 pyproj
-folium
-streamlit
-streamlit-folium
 pytest
 psutil
+fastapi
+uvicorn[standard]
+httpx
