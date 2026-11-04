@@ -348,3 +348,40 @@ rutas existan (sección 3.5).
 | `test_asociar_lugares_igual_que_nearest_nodes` | mismo resultado que `ox.distance.nearest_nodes` en UTM |
 | `test_componente_procesada_fuertemente_conexa` | con NetworkX: el grafo de los CSV es fuertemente conexo y tiene tantos nodos como la componente más grande de la red cruda |
 | `test_cargar_grafo_completo_y_rapido` | carga en < 2 s, todos los nodos y aristas, velocidades entre 5 y 130 km/h |
+
+---
+
+## Lugares a más de 500 m
+
+`experimentos/r1_lugares.py` se ejecutó con el catálogo de 46 lugares (2026-11-03). La
+verificación contra `ox.distance.nearest_nodes` dio el mismo nodo en los 46. Distancia al nodo
+más cercano: mediana 75.0 m, mínimo 6.4 m, máximo 1 178.0 m. Siete lugares quedan a más de
+500 m (`resultados/r1_lugares_lejanos.csv`):
+
+| id | Lugar | Categoría | Nodo | Distancia al nodo (m) |
+|---|---|---|---|---|
+| BBR | Reserva Natural Barbas Bremen | atractivo | 2734445328 | 1 178.0 |
+| COC | Valle de Cocora | atractivo | 1543526033 | 934.0 |
+| FES | Finca Hotel La Esperanza | finca | 10149145145 | 800.7 |
+| PBL | Peñas Blancas | atractivo | 4612341644 | 758.8 |
+| GRA | Finca Cafetera La Granada | finca | 7623496803 | 741.7 |
+| CMB | Combia Finca Hotel | finca | 6387018054 | 710.0 |
+| REC | RECUCA - Recorrido de la Cultura Cafetera | atractivo | 6334517962 | 596.7 |
+
+**Tratamiento.** Los siete son reservas, miradores o fincas rurales a las que se llega por un
+camino privado, carreteable destapado o sendero que OSM no clasifica como vía para carro
+(`network_type="drive"` deja fuera `track` y `path`). Las coordenadas son las del lugar (ver
+`docs/notas_catalogo.md`), así que no se corrigen: cada lugar se **conserva asociado a su nodo
+más cercano** y el tiempo de una ruta hacia él es el tiempo hasta ese nodo. El último tramo no
+modelado es como mucho 1.2 km; a 30 km/h serían unos 2.4 min, poco frente a los tiempos entre
+lugares de `resultados/matriz_tiempos.csv` (mediana 43.9 min, máximo 156.4 min).
+
+**Cambio de código (método largo).** Para la sustentación, `asociar_lugares` ahora llama a
+`nodo_mas_cercano(x, y, ids, xs, ys, traza=None)`, la búsqueda lineal con bucle explícito y la
+distancia euclidiana calculada paso a paso (`dx`, `dy`, `d2`). `parsear_maxspeed` ya no usa
+expresiones regulares: parte el texto carácter por carácter y lee el número con `leer_numero`.
+`asignar_pesos` se escribió con bucles visibles y pasos numerados. Las firmas y los resultados
+no cambiaron: se compararon la versión anterior y la nueva sobre las 20 157 aristas de la red
+cruda (0 diferencias en `speed_kph`, `travel_time` y `velocidad_imputada`) y sobre los 46
+lugares (mismo nodo y distancia). Ejemplo a mano en `docs/paso_a_paso_R1.md`; prueba nueva
+`test_nodo_mas_cercano_y_leer_numero_metodo_largo`.
