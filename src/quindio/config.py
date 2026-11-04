@@ -22,3 +22,4 @@ CRS_UTM = "EPSG:32618"  # WGS 84 / UTM zona 18N
 SEMILLA = 2026
 LIMITE_S = 300  # protocolo: 5 minutos
 REPETICIONES = 5
+GEOMETRIAS = PROCESADO / "geometria_aristas.json"  # "u,v" -> [[lat, lon], ...] forma real de la vía
