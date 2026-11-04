@@ -1,0 +1,192 @@
+{
+  "partida": "ARM",
+  "limite_h": 11,
+  "atractivos_iniciales": [
+    "MOQ",
+    "FUN",
+    "JBQ",
+    "CLC",
+    "CIL",
+    "CRS",
+    "ACR"
+  ],
+  "criterio_para_quitar": "en cada ronda se quita el atractivo cuya eliminación más acorta la jornada (visita + desvío ahorrado), recalculando el óptimo con Held-Karp",
+  "primer_intento": {
+    "orden": [
+      "ARM",
+      "JBQ",
+      "ACR",
+      "CRS",
+      "CIL",
+      "CLC",
+      "MOQ",
+      "FUN",
+      "ARM"
+    ],
+    "total_visitas_min": 600,
+    "total_desplazamientos_min": 135.4,
+    "jornada_h": 12.26,
+    "cabe_en_11_h": false,
+    "filas": [
+      {
+        "orden": 1,
+        "lugar": "JBQ",
+        "nombre": "Jardín Botánico del Quindío y Mariposario",
+        "desplazamiento_desde_anterior_min": 11.6,
+        "visita_min": 150,
+        "tiempo_acumulado_h": 2.69
+      },
+      {
+        "orden": 2,
+        "lugar": "ACR",
+        "nombre": "Mirador Alto de la Cruz",
+        "desplazamiento_desde_anterior_min": 40.9,
+        "visita_min": 45,
+        "tiempo_acumulado_h": 4.13
+      },
+      {
+        "orden": 3,
+        "lugar": "CRS",
+        "nombre": "Calle Real de Salento",
+        "desplazamiento_desde_anterior_min": 0.3,
+        "visita_min": 90,
+        "tiempo_acumulado_h": 5.63
+      },
+      {
+        "orden": 4,
+        "lugar": "CIL",
+        "nombre": "Mirador Colina Iluminada de Filandia",
+        "desplazamiento_desde_anterior_min": 34.9,
+        "visita_min": 45,
+        "tiempo_acumulado_h": 6.96
+      },
+      {
+        "orden": 5,
+        "lugar": "CLC",
+        "nombre": "Cementerio Libre de Circasia",
+        "desplazamiento_desde_anterior_min": 26.9,
+        "visita_min": 90,
+        "tiempo_acumulado_h": 8.91
+      },
+      {
+        "orden": 6,
+        "lugar": "MOQ",
+        "nombre": "Museo del Oro Quimbaya",
+        "desplazamiento_desde_anterior_min": 11.3,
+        "visita_min": 90,
+        "tiempo_acumulado_h": 10.6
+      },
+      {
+        "orden": 7,
+        "lugar": "FUN",
+        "nombre": "Parque de los Fundadores",
+        "desplazamiento_desde_anterior_min": 5.6,
+        "visita_min": 90,
+        "tiempo_acumulado_h": 12.19
+      },
+      {
+        "orden": "Regreso",
+        "lugar": "ARM",
+        "nombre": "Plaza de Bolívar de Armenia",
+        "desplazamiento_desde_anterior_min": 3.8,
+        "visita_min": "—",
+        "tiempo_acumulado_h": 12.26
+      }
+    ]
+  },
+  "quitados": [
+    {
+      "lugar": "JBQ",
+      "visita_min": 150,
+      "jornada_antes_h": 12.26,
+      "jornada_despues_h": 9.53,
+      "ahorro_h": 2.73,
+      "ahorro_desplazamiento_min": 13.71
+    }
+  ],
+  "final": {
+    "orden": [
+      "ARM",
+      "CLC",
+      "CIL",
+      "ACR",
+      "CRS",
+      "MOQ",
+      "FUN",
+      "ARM"
+    ],
+    "total_visitas_min": 450,
+    "total_desplazamientos_min": 121.7,
+    "jornada_h": 9.53,
+    "cabe_en_11_h": true,
+    "filas": [
+      {
+        "orden": 1,
+        "lugar": "CLC",
+        "nombre": "Cementerio Libre de Circasia",
+        "desplazamiento_desde_anterior_min": 21.8,
+        "visita_min": 90,
+        "tiempo_acumulado_h": 1.86
+      },
+      {
+        "orden": 2,
+        "lugar": "CIL",
+        "nombre": "Mirador Colina Iluminada de Filandia",
+        "desplazamiento_desde_anterior_min": 26.9,
+        "visita_min": 45,
+        "tiempo_acumulado_h": 3.06
+      },
+      {
+        "orden": 3,
+        "lugar": "ACR",
+        "nombre": "Mirador Alto de la Cruz",
+        "desplazamiento_desde_anterior_min": 33.7,
+        "visita_min": 45,
+        "tiempo_acumulado_h": 4.37
+      },
+      {
+        "orden": 4,
+        "lugar": "CRS",
+        "nombre": "Calle Real de Salento",
+        "desplazamiento_desde_anterior_min": 0.3,
+        "visita_min": 90,
+        "tiempo_acumulado_h": 5.88
+      },
+      {
+        "orden": 5,
+        "lugar": "MOQ",
+        "nombre": "Museo del Oro Quimbaya",
+        "desplazamiento_desde_anterior_min": 29.5,
+        "visita_min": 90,
+        "tiempo_acumulado_h": 7.87
+      },
+      {
+        "orden": 6,
+        "lugar": "FUN",
+        "nombre": "Parque de los Fundadores",
+        "desplazamiento_desde_anterior_min": 5.6,
+        "visita_min": 90,
+        "tiempo_acumulado_h": 9.46
+      },
+      {
+        "orden": "Regreso",
+        "lugar": "ARM",
+        "nombre": "Plaza de Bolívar de Armenia",
+        "desplazamiento_desde_anterior_min": 3.8,
+        "visita_min": "—",
+        "tiempo_acumulado_h": 9.53
+      }
+    ]
+  },
+  "rondas": [
+    "intento con 7 atractivos: 12.26 h (límite 11 h) -> no cabe",
+    "   sin MOQ: 10.76 h",
+    "   sin FUN: 10.76 h",
+    "   sin JBQ: 9.53 h",
+    "   sin CLC: 10.74 h",
+    "   sin CIL: 10.89 h",
+    "   sin CRS: 10.76 h",
+    "   sin ACR: 11.50 h",
+    "quito JBQ (visita 150 min, ahorra 13.7 min de desplazamiento): 9.53 h"
+  ]
+}
