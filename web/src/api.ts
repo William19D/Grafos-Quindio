@@ -27,6 +27,19 @@ export type Ruta = {
   polilinea: Punto[]
 }
 
+// Árbol de exploración de Dijkstra: un tramo (predecesor -> nodo) por cada nodo explorado,
+// en el orden en que salió de la cola, con su distancia definitiva en segundos.
+export type Arbol = {
+  origen: { id: string; nombre: string }
+  destino: { id: string; nombre: string }
+  tiempo_s: number
+  nodos_explorados: number
+  nodos_grafo: number
+  tramos: Punto[][]
+  tiempos_s: number[]
+  ruta: Punto[]
+}
+
 export type Envolvente = {
   vertices: { lat: number; lon: number; x_utm: number; y_utm: number }[]
   n_vertices: number
@@ -92,6 +105,8 @@ async function pedir<T>(url: string, opciones?: RequestInit): Promise<T> {
 export const pedirLugares = () => pedir<Lugar[]>('/api/lugares')
 export const pedirRuta = (origen: string, destino: string) =>
   pedir<Ruta>(`/api/ruta?origen=${encodeURIComponent(origen)}&destino=${encodeURIComponent(destino)}`)
+export const pedirArbol = (origen: string, destino: string) =>
+  pedir<Arbol>(`/api/arbol?origen=${encodeURIComponent(origen)}&destino=${encodeURIComponent(destino)}`)
 export const pedirEnvolvente = () => pedir<Envolvente>('/api/envolvente')
 export const pedirResultados = () => pedir<Resultados>('/api/resultados')
 export const pedirItinerario = (partida: string, atractivos: string[]) =>

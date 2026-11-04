@@ -20,3 +20,6 @@ export const ESTILO_CATEGORIA: Record<string, { color: string; radio: number }> 
   finca: { color: COLOR.guadua, radio: 6 },
   acopio: { color: COLOR.tostado, radio: 6 },
 }
+
+// Árbol de exploración de Dijkstra: franjas de cerca (0 %) a lejos (100 % del tiempo al destino)
+export const TONOS_ARBOL = ['#2f6b3a', '#56782d', '#7d7a24', '#8f6522', '#7a4b1e']
