@@ -24,6 +24,7 @@ PASOS = [
     ("experimentos/r1_red.py", "R1: pesos, componente fuertemente conexa y grafo procesado (usa data/raw)", True),
     ("experimentos/r1_scc.py", "R1: tiempo de la componente en redes de 2, 5, 10 y 20 km (descarga redes)", True),
     ("experimentos/r1_figuras.py", "R1: gráfica tiempo de la componente vs V+E", False),
+    ("experimentos/r1_geometrias.py", "R1: forma real de cada tramo para dibujar rutas en el mapa", False),
     ("experimentos/r1_lugares.py", "R1: asociar cada lugar a su nodo más cercano", False),
     ("experimentos/r2_dijkstra.py", "R2: medición de Dijkstra lineal y con cola (25 pares)", False),
     ("experimentos/r2_matriz.py", "R2: matriz de tiempos 46 x 46", False),
