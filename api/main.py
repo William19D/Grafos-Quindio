@@ -18,6 +18,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "src"))  # para poder importar el paquete quindio
 
 from fastapi import FastAPI, HTTPException  # noqa: E402
+from fastapi.middleware.gzip import GZipMiddleware  # noqa: E402
 from pyproj import Transformer  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 from pydantic import BaseModel  # noqa: E402
@@ -98,6 +99,7 @@ async def al_iniciar(_app):
 
 
 app = FastAPI(title="Rutas del Paisaje Cultural Cafetero", lifespan=al_iniciar)
+app.add_middleware(GZipMiddleware, minimum_size=1000)  # el árbol de exploración pesa ~1,7 MB sin comprimir
 
 
 # ---------------------------------------------------------------------------------------------
@@ -280,6 +282,40 @@ def ruta(origen: str, destino: str):
     resultado["origen"] = {"id": origen, "nombre": lugar_o["nombre"]}
     resultado["destino"] = {"id": destino, "nombre": lugar_d["nombre"]}
     return resultado
+
+
+def tramo_dibujable(u, v):
+    """Puntos [lat, lon] del tramo u->v siguiendo la vía (5 decimales ≈ 1 m, para aligerar)."""
+    clave = f"{u},{v}"
+    if clave in estado["geometrias"]:
+        puntos = estado["geometrias"][clave]
+    else:
+        puntos = [estado["coords"][u], estado["coords"][v]]
+    tramo = []
+    for lat, lon in puntos:
+        tramo.append([round(lat, 5), round(lon, 5)])
+    return tramo
+
+
+@app.get("/api/arbol")
+def arbol(origen: str, destino: str):
+    """Árbol de exploración de Dijkstra (cola de prioridad) de origen a destino, en el orden en
+    que cada nodo salió de la cola: tramo predecesor -> nodo y su distancia definitiva."""
+    lugar_o = buscar_lugar(origen)
+    lugar_d = buscar_lugar(destino)
+    pasos = []
+    tiempo_s, ruta_nodos, explorados = dijkstra_cola(estado["adj"], lugar_o["nodo"], lugar_d["nodo"], arbol=pasos)
+    tramos = []
+    tiempos_s = []
+    for predecesor, nodo, distancia in pasos:
+        if predecesor is None:
+            continue  # el origen no tiene tramo de llegada
+        tramos.append(tramo_dibujable(predecesor, nodo))
+        tiempos_s.append(round(distancia, 1))
+    return {"origen": {"id": origen, "nombre": lugar_o["nombre"]},
+            "destino": {"id": destino, "nombre": lugar_d["nombre"]},
+            "tiempo_s": tiempo_s, "nodos_explorados": explorados, "nodos_grafo": len(estado["adj"]),
+            "tramos": tramos, "tiempos_s": tiempos_s, "ruta": polilinea_de_ruta(ruta_nodos)}
 
 
 @app.get("/api/envolvente")
