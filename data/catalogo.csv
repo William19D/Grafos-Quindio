@@ -1,0 +1,47 @@
+id,nombre,municipio,categoria,lat,lon,duracion_visita_min,fuente_duracion,fuente_coordenadas
+ARM,Plaza de Bolívar de Armenia,Armenia,cabecera,4.532571193032303,-75.6728794763243,,,"config.PLAZA_BOLIVAR_ARMENIA (notebook base); coincide con Nominatim/OSM (consulta 2026-11-03): 'Plaza de Bolívar, Armenia' (place=square)"
+BUE,Plaza de Bolívar de Buenavista,Buenavista,cabecera,4.359529752012948,-75.73834799134275,,,"Notebook base AlgoritmosDikstra-FloydWarshall.ipynb; coincide con Nominatim/OSM (consulta 2026-11-03): 'Plaza de Bolívar, Buenavista, Quindío' (place=square)"
+CAL,Plaza de Bolívar de Calarcá,Calarcá,cabecera,4.5306393,-75.6405209,,,"Nominatim/OSM (consulta 2026-11-03): 'Plaza de Bolívar, Calarcá' (place=square)"
+CIR,Plaza Simón Bolívar de Circasia,Circasia,cabecera,4.6201475,-75.6348319,,,"Nominatim/OSM (consulta 2026-11-03): 'Plaza Bolívar Circasia' (highway=pedestrian, frente a la Parroquia Nuestra Señora de las Mercedes)"
+COR,Parque José María Córdoba (plaza principal),Córdoba,cabecera,4.3901128,-75.6853516,,,"Nominatim/OSM (consulta 2026-11-03): 'Parque, Córdoba, Quindío' (place=square)"
+FIL,Parque Bolívar de Filandia,Filandia,cabecera,4.674663595379677,-75.65802908143719,,,"Notebook base AlgoritmosDikstra-FloydWarshall.ipynb; coincide con Nominatim/OSM (consulta 2026-11-03): 'Parque, Filandia' (Parque Bolívar)"
+GEN,Plaza de Bolívar de Génova,Génova,cabecera,4.2065017,-75.7906184,,,"Nominatim/OSM (consulta 2026-11-03): 'Plaza de Bolívar, Génova, Quindío' (leisure=park)"
+TEB,Plaza de Bolívar de La Tebaida,La Tebaida,cabecera,4.4536682,-75.789451,,,"Nominatim/OSM (consulta 2026-11-03): 'Plaza de Bolívar, La Tebaida' (place=square)"
+MON,Plaza de Bolívar de Montenegro,Montenegro,cabecera,4.567176,-75.7504826,,,"Nominatim/OSM (consulta 2026-11-03): 'Plaza de Bolívar, Montenegro, Quindío' (place=square)"
+PIJ,Parque Principal de Pijao,Pijao,cabecera,4.334068752162445,-75.70404104525261,,,"Notebook base AlgoritmosDikstra-FloydWarshall.ipynb; coincide con Nominatim/OSM (consulta 2026-11-03): 'Parque, Pijao' (Parque Principal)"
+QUI,Plaza de Bolívar de Quimbaya,Quimbaya,cabecera,4.622474183670408,-75.76308615678728,,,"Notebook base AlgoritmosDikstra-FloydWarshall.ipynb; coincide con Nominatim/OSM (consulta 2026-11-03): 'Plaza de Bolívar, Quimbaya' (place=square)"
+SAL,Plaza de Bolívar de Salento,Salento,cabecera,4.6372361,-75.5698171,,,"Nominatim/OSM (consulta 2026-11-03): 'Plaza de Bolívar, Salento' (leisure=park)"
+PDC,Parque Nacional del Café,Montenegro,atractivo,4.5373265,-75.7692713,360,"Visita de jornada: horario 9:00-18:00 (Semana, 2024: https://www.semana.com/turismo/articulo/parque-del-cafe-donde-queda-horarios-y-precios-de-entradas/202446/); se toman 6 h",Nominatim/OSM (consulta 2026-11-03): 'Parque del Café' (tourism=theme_park)
+PAN,PANACA (Parque Nacional de la Cultura Agropecuaria),Quimbaya,atractivo,4.6070805,-75.8188312,360,Tour de 6 h y entrada pasaporte de 7 h (Expedia: https://www.expedia.com/things-to-do/tour-panaca.a4974155.activity-details); se toman 6 h,Nominatim/OSM (consulta 2026-11-03): 'PANACA' (tourism=theme_park)
+COC,Valle de Cocora,Salento,atractivo,4.6375735,-75.4874648,210,"Sendero corto de las palmas: 3 a 4 h (https://www.mochileandoporelmundo.com/trekking-por-el-valle-del-cocora-colombia/); se toma 3,5 h","Nominatim/OSM (consulta 2026-11-03): 'Cocora, Salento' (place=village, entrada al valle; el área 'Valle del Cocora - Palma de Cera' está 1 km al este)"
+JBQ,Jardín Botánico del Quindío y Mariposario,Calarcá,atractivo,4.5107261,-75.651186,150,"Recorrido guiado de 2,5 h según el jardín (Semana: https://www.semana.com/turismo/articulo/que-costo-tiene-la-entrada-y-que-se-puede-hacer-en-el-jardin-botanico-del-quindio/202549/)",Nominatim/OSM (consulta 2026-11-03): 'Jardín Botánico del Quindío' (leisure=garden)
+MOQ,Museo del Oro Quimbaya,Armenia,atractivo,4.5710192,-75.648301,90,Criterio C2 (museo o sitio patrimonial: 90 min),Nominatim/OSM (consulta 2026-11-03): 'Museo del Oro Quimbaya' (tourism=museum)
+REC,RECUCA - Recorrido de la Cultura Cafetera,Calarcá,atractivo,4.4322488,-75.7332143,210,"Recorrido de 3 a 4 h (Pulzo: https://www.pulzo.com/vivir-bien/viajes-y-turismo/cuanto-vale-entrada-recuca-quindio-para-recorrido-cafe-unico-mundo-PP4364821); se toma 3,5 h","Nominatim/OSM (consulta 2026-11-03): 'Recuca' (tourism=theme_park, vereda Barcelona)"
+CIL,Mirador Colina Iluminada de Filandia,Filandia,atractivo,4.6689573,-75.6656621,45,Criterio C1 (mirador o punto de observación: 45 min),"Nominatim/OSM (consulta 2026-11-03): 'Mirador Colina Iluminada, Filandia' (tourism=viewpoint)"
+PVI,Parque de la Vida,Armenia,atractivo,4.54745,-75.6595605,90,Criterio C3 (parque urbano o calle patrimonial: 90 min),"Nominatim/OSM (consulta 2026-11-03): 'Parque de la Vida, Armenia'"
+ARR,Parque Los Arrieros,Quimbaya,atractivo,4.5796828,-75.7810557,240,Criterio C5 (parque temático de medio día: 240 min),Nominatim/OSM (consulta 2026-11-03): 'Parque Los Arrieros' (tourism=theme_park; la dirección OSM dice Montenegro pero el punto cae en el polígono de Quimbaya)
+ACR,Mirador Alto de la Cruz,Salento,atractivo,4.6396541,-75.56647,45,Criterio C1 (mirador o punto de observación: 45 min),"Nominatim/OSM (consulta 2026-11-03): 'Mirador Alto de la Cruz, Salento' (tourism=viewpoint)"
+CRS,Calle Real de Salento,Salento,atractivo,4.6383317,-75.5687151,90,Criterio C3 (parque urbano o calle patrimonial: 90 min),"Nominatim/OSM (consulta 2026-11-03): 'Calle Real, Salento' (Carrera 6)"
+CLC,Cementerio Libre de Circasia,Circasia,atractivo,4.6179911,-75.6427619,90,Criterio C2 (museo o sitio patrimonial: 90 min),"Nominatim/OSM (consulta 2026-11-03): 'Cementerio Libre, Circasia' (landuse=cemetery)"
+MML,La Granja de Mamá Lulú,Quimbaya,atractivo,4.6089803,-75.7902032,120,Criterio C4 (granja demostrativa pequeña: 120 min),Nominatim/OSM (consulta 2026-11-03): 'Granja de Mamá Lulú' (tourism=attraction)
+BBR,Reserva Natural Barbas Bremen,Filandia,atractivo,4.6709827,-75.6214104,180,Criterio C6 (reserva o sendero natural corto: 180 min),"Nominatim/OSM (consulta 2026-11-03): 'Reserva Natural, Filandia' (leisure=nature_reserve)"
+PBL,Peñas Blancas,Calarcá,atractivo,4.4780477,-75.6287161,180,Criterio C6 (reserva o sendero natural corto: 180 min),"Nominatim/OSM (consulta 2026-11-03): 'Peñas Blancas, Calarcá' (natural=cliff)"
+FUN,Parque de los Fundadores,Armenia,atractivo,4.5458144,-75.6621134,90,Criterio C3 (parque urbano o calle patrimonial: 90 min),"Nominatim/OSM (consulta 2026-11-03): 'Parque Fundadores, Armenia' (leisure=park)"
+MMQ,Casa Museo Musical del Quindío,Armenia,atractivo,4.5279863,-75.6770797,90,Criterio C2 (museo o sitio patrimonial: 90 min),"Nominatim/OSM (consulta 2026-11-03): 'Museo, Armenia' (tourism=museum)"
+OCA,Finca El Ocaso (tour de café),Salento,finca,4.6189971,-75.6064047,,,Nominatim/OSM (consulta 2026-11-03): 'Finca El Ocaso'
+DEL,Finca de Don Elías (tour de café),Salento,finca,4.6245512,-75.59741,,,"Nominatim/OSM (consulta 2026-11-03): 'Don Elías, Salento' (shop=farm)"
+SAB,Café San Alberto (finca y tour de café),Buenavista,finca,4.35843,-75.7344672,,,Nominatim/OSM (consulta 2026-11-03): 'Café San Alberto'
+BAM,"Hacienda Bambusa (hotel rural, corregimiento El Caimo)",Armenia,finca,4.4217227,-75.7610525,,,Nominatim/OSM (consulta 2026-11-03): 'Hacienda Bambusa' (tourism=hotel)
+DPA,Hotel Decameron Panaca,Quimbaya,finca,4.6087063,-75.8245057,,,Nominatim/OSM (consulta 2026-11-03): 'Hotel Decameron Panaca' (tourism=hotel)
+VNO,Finca Villa Nora (hotel rural),Quimbaya,finca,4.6148352,-75.7771946,,,"Nominatim/OSM (consulta 2026-11-03): 'Finca hotel, Quimbaya' (tourism=hotel)"
+CMB,Combia Finca Hotel,Calarcá,finca,4.4917369,-75.6862628,,,Nominatim/OSM (consulta 2026-11-03): 'Combia hotel' (tourism=guest_house)
+GRA,Finca Cafetera La Granada,Pijao,finca,4.3153418,-75.707077,,,"Nominatim/OSM (consulta 2026-11-03): 'Finca, Pijao' (tourism=attraction)"
+LMA,Eco Finca La María,Génova,finca,4.2247329,-75.7817954,,,"Nominatim/OSM (consulta 2026-11-03): 'Finca, Génova'"
+FES,Finca Hotel La Esperanza,Montenegro,finca,4.5330416,-75.7904126,,,"Nominatim/OSM (consulta 2026-11-03): 'Finca, Montenegro'"
+ALM,Almacafé Armenia (trilladora y bodega),Armenia,acopio,4.5159823,-75.6905786,,,Nominatim/OSM (consulta 2026-11-03): 'Almacafé Armenia' (landuse=industrial)
+TEU,Trilladora Europa,Armenia,acopio,4.51627,-75.6920368,,,Nominatim/OSM (consulta 2026-11-03): 'Trilladora' (building)
+TGO,Trilladora Goncheverry,Armenia,acopio,4.5338428,-75.6819754,,,Nominatim/OSM (consulta 2026-11-03): 'Trilladora' (building)
+CQB,Cooperativa de Caficultores del Quindío - Quimbaya,Quimbaya,acopio,4.6208085,-75.7666725,,,Nominatim/OSM (consulta 2026-11-03): 'Cooperativa de Caficultores del Quindío' (landuse=industrial)
+CCA,Cooperativa de Caficultores del Quindío - Calarcá,Calarcá,acopio,4.5289719,-75.6435243,,,"Nominatim/OSM (consulta 2026-11-03): 'Cooperativa de Caficultores, Calarcá'"
+CGE,Cooperativa de Caficultores del Quindío - Génova,Génova,acopio,4.2048129,-75.7926848,,,"Nominatim/OSM (consulta 2026-11-03): 'Cooperativa de Caficultores, Génova'"
+CMO,Cooperativa de Caficultores del Quindío - Montenegro,Montenegro,acopio,4.5657115,-75.7556055,,,"Nominatim/OSM (consulta 2026-11-03): 'Cooperativa de Caficultores, Montenegro'"
