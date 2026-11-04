@@ -1,0 +1,9 @@
+k,semilla,lugares,tiempo_fuerza_bruta_ms,costo_fuerza_bruta_s,estado_fuerza_bruta,tiempo_held_karp_ms,costo_held_karp_s,estado_held_karp,mismo_costo,recorrido_optimo
+5,2031,CCA PDC CRS MML CIL,0.138,9068.98,completada,0.248,9068.98,completada,sí,ARM -> PDC -> MML -> CIL -> CRS -> CCA -> ARM
+6,2032,CIR FES CCA DEL MON CQB,0.913,9677.89,completada,0.35,9677.89,completada,sí,ARM -> CCA -> DEL -> CIR -> MON -> CQB -> FES -> ARM
+7,2033,FUN PIJ TEB PBL LMA GRA PAN,7.505,18686.92,completada,0.908,18686.92,completada,sí,ARM -> PBL -> PIJ -> GRA -> LMA -> TEB -> PAN -> FUN -> ARM
+8,2034,FIL MML CGE VNO LMA COR GRA MON,62.051,19505.59,completada,2.313,19505.59,completada,sí,ARM -> FIL -> VNO -> MML -> MON -> COR -> GRA -> CGE -> LMA -> ARM
+9,2035,ARR SAL FIL CIR BAM CMO TEB MML GEN,656.317,20720.76,completada,6.055,20720.76,completada,sí,ARM -> GEN -> BAM -> TEB -> CMO -> ARR -> MML -> FIL -> SAL -> CIR -> ARM
+10,2036,COR ALM LMA FES FUN BUE PIJ GRA CAL PBL,6638.79,17479.92,completada,13.938,17479.92,completada,sí,ARM -> FUN -> ALM -> FES -> BUE -> LMA -> GRA -> PIJ -> COR -> PBL -> CAL -> ARM
+11,2037,REC GRA COR ARR DEL PIJ CIR BBR TEB CMO CIL,84030.081,19252.95,"completada (1 repetición, > 1 min)",36.491,19252.95,completada,sí,ARM -> REC -> COR -> PIJ -> GRA -> TEB -> CMO -> ARR -> CIL -> BBR -> DEL -> CIR -> ARM
+12,2038,GEN SAB FIL TEB CMB GRA ALM BUE JBQ SAL CLC COR,,,no completada,81.215,22599.0,completada,solo Held-Karp,ARM -> CLC -> FIL -> SAL -> JBQ -> CMB -> COR -> GRA -> GEN -> SAB -> BUE -> TEB -> ALM -> ARM
