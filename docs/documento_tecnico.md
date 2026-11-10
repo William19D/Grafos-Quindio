@@ -149,8 +149,8 @@ y de eficiencia; entre ejecuciones completas de un mismo experimento la mediana 
 **Desarrollo guiado por especificaciones.** Antes de programar cada requerimiento se escribió su
 especificación en `specs/` (`catalogo.md`, `R1.md`, `R2.md`, `R3.md`, `R4.md`, `R5.md`) con
 entradas, salidas, comportamiento y casos de prueba; luego las pruebas en `tests/`. Estado actual:
-`python -m pytest -q tests` → **55 pruebas en verde** (catálogo 8, R1 9, R2 8, R3 7, R4 13,
-API de la aplicación 10).
+`python -m pytest -q tests` → **58 pruebas en verde** (catálogo 8, R1 9, R2 9, R3 7, R4 13,
+API de la aplicación 12).
 
 ### 1.5 Explicación paso a paso
 
@@ -560,7 +560,7 @@ Dijkstra la evalúa en orden creciente de δ.
 
 #### 2.2.3 Verificación
 
-- `tests/test_r2.py` (8 pruebas): grafo de 6 nodos resuelto a mano (A→F = 12, ruta A-C-B-D-E-F,
+- `tests/test_r2.py` (9 pruebas): grafo de 6 nodos resuelto a mano (A→F = 12, ruta A-C-B-D-E-F,
   6 explorados) en las dos versiones; uno-a-todos a mano; destino inalcanzable → (∞, [], 3);
   `traza` no cambia el resultado; grafo aleatorio de 300 nodos (semilla 2026) con mismo tiempo y
   mismos explorados en ambas versiones e igual a `nx.dijkstra_path_length` y
@@ -1108,8 +1108,9 @@ atractivos y ver el recorrido con Held-Karp y con la voraz, el tiempo de cada un
 
 **Arquitectura.** Backend FastAPI (`api/main.py`) + frontend React, Tailwind CSS y Vite (`web/`),
 descritos en la sección 1.3 y especificados en `specs/R5.md`. La ruta se calcula en el momento con
-`dijkstra_cola` (la misma función medida en R2) y se dibuja con las coordenadas de los nodos de la
-ruta reconstruida con `pred`; la envolvente se calcula al pedirla con `quickhull` sobre los mismos
+`dijkstra_cola` (la misma función medida en R2) y se dibuja siguiendo la forma real de cada tramo
+de la ruta reconstruida con `pred` (`data/processed/geometria_aristas.json`); con
+`dijkstra_cola(..., arbol=...)` la vista Ruta también anima el árbol de exploración; la envolvente se calcula al pedirla con `quickhull` sobre los mismos
 puntos UTM de R3 (da los mismos 14 vértices de `resultados/envolvente.json`); el itinerario se
 calcula con `held_karp` y `vecino_mas_cercano` sobre la matriz de R2 y las duraciones del catálogo,
 y cada tramo se dibuja con la ruta de Dijkstra entre los dos lugares; las tablas y gráficas son los

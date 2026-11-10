@@ -111,7 +111,7 @@ ya fueron explorados y relajados.
 
 ## 4. Verificación
 
-1. **Pruebas** (`tests/test_r2.py`, 8 pruebas en verde):
+1. **Pruebas** (`tests/test_r2.py`, 9 pruebas en verde):
 
 | Prueba | Qué comprueba |
 |---|---|
