@@ -76,7 +76,9 @@ def dijkstra_lineal(adj, origen, destino, traza=None):
     O(V²). Las relajaciones suman O(E) en total (cada arista una vez). Total O(V² + E) = O(V²).
     Memoria: O(V) (tres diccionarios de V entradas). Cormen et al. 2009, secc. 24.3.
     """
-    # Paso 1: inicialización
+    # Paso 1: inicialización. Los tres son diccionarios: a cada nodo le corresponde un valor.
+    # math.inf es "infinito": todavía no sabemos cómo llegar a ese nodo.
+    # None significa "nada": el nodo todavía no tiene predecesor.
     distancia = {}
     predecesor = {}
     explorado = {}
@@ -114,7 +116,9 @@ def dijkstra_lineal(adj, origen, destino, traza=None):
         if nodo_minimo == destino:
             break
 
-        # Paso 2e: relajar las aristas que salen del nodo
+        # Paso 2e: relajar las aristas que salen del nodo. Cada arista es un trío
+        # (vecino, tiempo, distancia) y el for lo separa en tres variables; la distancia en
+        # metros no se usa aquí (por eso se llama _distancia_m).
         for vecino, tiempo, _distancia_m in adj[nodo_minimo]:
             if explorado[vecino]:
                 continue  # ya es definitivo: no puede mejorar
@@ -167,7 +171,8 @@ def dijkstra_cola(adj, origen, destino=None, traza=None, arbol=None):
     Total O((V + E) log V). Memoria: O(V + E) (diccionarios de V entradas y hasta E entradas en
     la cola). Cormen et al. 2009, secc. 24.3 (análisis con montículo binario).
     """
-    # Paso 1: inicialización
+    # Paso 1: inicialización (igual que en la versión lineal: math.inf = "infinito, todavía no
+    # sabemos cómo llegar"; None = "sin predecesor") y la cola con el origen a distancia 0.
     distancia = {}
     predecesor = {}
     explorado = {}
@@ -182,7 +187,8 @@ def dijkstra_cola(adj, origen, destino=None, traza=None, arbol=None):
 
     # Paso 2: procesar la cola
     while not cola.esta_vacio():
-        # Paso 2a: entrada de menor distancia
+        # Paso 2a: entrada de menor distancia. La cola devuelve una pareja (distancia, nodo) y
+        # se guarda cada parte en su variable.
         distancia_extraida, nodo = cola.extraer_minimo()
 
         # Paso 2b: descartar entradas obsoletas
@@ -203,7 +209,7 @@ def dijkstra_cola(adj, origen, destino=None, traza=None, arbol=None):
         if nodo == destino:
             break
 
-        # Paso 2e: relajar aristas de salida
+        # Paso 2e: relajar aristas de salida (cada arista es el trío (vecino, tiempo, distancia))
         for vecino, tiempo, _distancia_m in adj[nodo]:
             candidata = distancia_extraida + tiempo
             if candidata < distancia[vecino]:

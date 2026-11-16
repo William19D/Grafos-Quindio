@@ -11,6 +11,8 @@ class MonticuloMinimo:
 
     Se guarda en una lista `datos` de pares (prioridad, elemento). Para la posición i:
         padre(i) = (i - 1) // 2      hijo izquierdo = 2*i + 1      hijo derecho = 2*i + 2
+    ('//' es la división entera: se bota la parte decimal. Ej.: los hijos de la posición 2 son
+    la 5 y la 6, y el padre de ambas es (5 - 1) // 2 = 2 y (6 - 1) // 2 = 5 // 2 = 2.)
     Propiedad del montículo: la prioridad de cada padre es <= la de sus hijos, así que el
     mínimo siempre está en datos[0].
 
@@ -55,7 +57,7 @@ class MonticuloMinimo:
             raise IndexError("extraer_minimo de un montículo vacío")
         # Paso 2: el mínimo está en la raíz
         minimo = self.datos[0]
-        # Paso 3: el último pasa a la raíz
+        # Paso 3: el último pasa a la raíz (pop() saca el último elemento de la lista)
         ultimo = self.datos.pop()
         if len(self.datos) > 0:
             self.datos[0] = ultimo
@@ -75,9 +77,10 @@ class MonticuloMinimo:
         """
         # Paso 1
         while i > 0:
-            # Paso 1a: posición del padre
+            # Paso 1a: posición del padre ('//' = división entera, sin decimales)
             padre = (i - 1) // 2
-            # Paso 1b: ¿el hijo es menor que el padre?
+            # Paso 1b: ¿el hijo es menor que el padre? Cada dato es una pareja
+            # (prioridad, elemento), así que datos[i][0] es la prioridad del dato i.
             if self.datos[i][0] < self.datos[padre][0]:
                 temporal = self.datos[i]
                 self.datos[i] = self.datos[padre]

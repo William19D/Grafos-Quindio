@@ -20,12 +20,13 @@ def preparar_puntos(xs, ys):
 
     Complejidad: O(n) tiempo esperado (búsqueda en conjunto hash O(1) promedio) y O(n) memoria.
     """
-    # Paso 1: estructuras vacías.
+    # Paso 1: estructuras vacías. Un set (conjunto) guarda cada punto una sola vez y permite
+    # preguntar "¿ya vi este punto?" sin recorrer toda la lista.
     vistos = set()
     resultado = []
     # Paso 2: recorrer todos los puntos de entrada.
     for i in range(len(xs)):
-        # Paso 3: redondear al entero más cercano.
+        # Paso 3: redondear al entero más cercano (round redondea, int lo deja como entero).
         x_entero = int(round(xs[i]))
         y_entero = int(round(ys[i]))
         punto = (x_entero, y_entero)
@@ -49,6 +50,7 @@ def orientacion(a, b, c):
     (coordenadas UTM ~10^6 dan productos ~10^12, lejos del máximo 9.2 * 10^18).
     Complejidad: O(1).
     """
+    # Cada punto es una pareja (x, y): p[0] es la x y p[1] es la y.
     dx1 = b[0] - a[0]
     dy1 = b[1] - a[1]
     dx2 = c[0] - a[0]
@@ -147,7 +149,7 @@ def quickhull(puntos, traza=None):
 
     # Paso 5: procesar tareas hasta vaciar la pila.
     while len(pila) > 0:
-        tarea = pila.pop()
+        tarea = pila.pop()  # pop() saca el ÚLTIMO elemento que se metió (así funciona una pila)
         punto_p = tarea[0]
         punto_q = tarea[1]
         candidatos = tarea[2]
@@ -223,6 +225,9 @@ def quitar_colineales(poligono):
         return list(poligono)
     resultado = []
     for i in range(h):
+        # El polígono es cerrado: el anterior del primero es el último y el siguiente del último
+        # es el primero. En Python poligono[-1] es el último elemento, y (i + 1) % h vuelve a 0
+        # cuando i + 1 llega a h ('%' es el residuo de la división: 5 % 5 = 0).
         anterior = poligono[i - 1]
         actual = poligono[i]
         siguiente = poligono[(i + 1) % h]
@@ -237,9 +242,17 @@ def empezar_en_menor(poligono):
         return []
     indice_menor = 0
     for i in range(1, len(poligono)):
+        # Comparar dos parejas (x, y) compara primero la x y, si empatan, la y.
         if poligono[i] < poligono[indice_menor]:
             indice_menor = i
-    return list(poligono[indice_menor:]) + list(poligono[:indice_menor])
+    # Rotar: primero desde el menor hasta el final y después desde el principio hasta antes del
+    # menor. Ej.: [P, Q, A, R] con A el menor -> [A, R] + [P, Q] = [A, R, P, Q].
+    rotado = []
+    for i in range(indice_menor, len(poligono)):
+        rotado.append(poligono[i])
+    for i in range(0, indice_menor):
+        rotado.append(poligono[i])
+    return rotado
 
 
 def envolvente_scipy(puntos):
@@ -272,10 +285,14 @@ def area_km2(poligono):
     h = len(poligono)
     suma = 0
     for i in range(h):
-        x_actual, y_actual = poligono[i]
-        x_siguiente, y_siguiente = poligono[(i + 1) % h]
+        x_actual = poligono[i][0]
+        y_actual = poligono[i][1]
+        # (i + 1) % h: el siguiente del último vértice es el primero ('%' = residuo: h % h = 0)
+        x_siguiente = poligono[(i + 1) % h][0]
+        y_siguiente = poligono[(i + 1) % h][1]
         suma = suma + x_actual * y_siguiente - x_siguiente * y_actual
-    return abs(suma) / 2 / 1_000_000
+    # abs = valor absoluto (quita el signo). Se divide por 2 y por 1 000 000 (1 km² = 1 000 000 m²).
+    return abs(suma) / 2 / 1000000
 
 
 def _mostrar(p):
