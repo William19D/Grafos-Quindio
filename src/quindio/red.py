@@ -95,6 +95,7 @@ def parsear_maxspeed(valor):
     Complejidad: O(m) en tiempo y memoria para un texto de m caracteres.
     """
     # Paso 1: lista de valores -> media de los que se pueden leer
+    # (isinstance(valor, list) pregunta "¿valor es una lista?")
     if isinstance(valor, list):
         suma = 0
         cantidad = 0
@@ -107,7 +108,7 @@ def parsear_maxspeed(valor):
             return None
         return suma / cantidad
 
-    # Paso 2: None o NaN (el tramo no tiene velocidad en OSM)
+    # Paso 2: None o NaN (el tramo no tiene velocidad en OSM): si no es texto (str), no se lee
     if not isinstance(valor, str):
         return None
 
@@ -125,9 +126,9 @@ def parsear_maxspeed(valor):
     # Paso 4: leer cada pedazo
     velocidades = []
     for pedazo in pedazos:
-        # Paso 4a: limpiar
+        # Paso 4a: limpiar (strip quita los espacios de los extremos y lower pasa a minúsculas)
         texto = pedazo.strip().lower()
-        # Paso 4b: quitar la unidad (si la hay)
+        # Paso 4b: quitar la unidad (si la hay). texto[:-3] es el texto sin sus 3 últimas letras.
         factor = 1.0
         if texto.endswith("mph"):
             factor = MPH_A_KMH
@@ -179,12 +180,15 @@ def asignar_pesos(G, traza=None):
              travel_time <- length / (velocidad / 3.6)          (metros / (m/s) = segundos)
         4. devolver un resumen por tipo de vía
 
-    Complejidad: O(E) en tiempo (dos recorridos de las E aristas, más O(T log T) para ordenar el
-    resumen de T tipos de vía, T << E) y O(E) en memoria.
+    Complejidad: O(E) en tiempo (dos recorridos de las E aristas) más O(T²) del ordenamiento por
+    inserción del resumen de T tipos de vía (T = 11, así que son a lo sumo 121 comparaciones,
+    nada frente a E = 20 157 aristas). Memoria: O(E).
     traza: lista opcional; si no es None se le agregan textos con cada decisión (para la demo).
     """
     # Paso 1: primera pasada, velocidades conocidas por tipo de vía
     conocidas = {}  # tipo -> lista de velocidades leídas
+    # Cada arista viene como (u, v, datos), donde datos es un diccionario con sus atributos.
+    # datos.get("highway") devuelve el atributo, o None si la arista no lo tiene.
     for u, v, datos in G.edges(data=True):
         tipo = tipo_via(datos.get("highway"))
         velocidad_leida = parsear_maxspeed(datos.get("maxspeed"))
@@ -222,7 +226,7 @@ def asignar_pesos(G, traza=None):
     total = {}
     for u, v, datos in G.edges(data=True):
         tipo = tipo_via(datos.get("highway"))
-        velocidad_leida = datos.pop("_vel")
+        velocidad_leida = datos.pop("_vel")  # lee el valor guardado en el paso 1 y lo borra
         if velocidad_leida is None:
             datos["velocidad_imputada"] = True
             datos["speed_kph"] = reemplazo[tipo]
@@ -239,7 +243,9 @@ def asignar_pesos(G, traza=None):
                          f"-> {datos['travel_time']:.2f} s")
 
     # Paso 4: resumen por tipo, ordenado de mayor a menor cantidad de aristas solo para
-    # presentarlo. Ordenamiento por inserción a mano (pocos tipos de vía, ~11).
+    # presentarlo. Ordenamiento por inserción a mano (pocos tipos de vía, ~11): cada tipo nuevo
+    # se mete en la posición que le toca, corriendo hacia atrás mientras el de antes tenga menos
+    # aristas. Costo O(T²) para T tipos.
     tipos_ordenados = []
     for tipo in total:
         posicion = len(tipos_ordenados)
@@ -311,7 +317,7 @@ def nodo_mas_cercano(x, y, ids, xs, ys, traza=None):
             mejor_d2 = d2
         elif traza is not None:
             traza.append(f"nodo {ids[i]}: d = {math.sqrt(d2):.1f} m, no mejora")
-    # Paso 3: una sola raíz cuadrada al final
+    # Paso 3: una sola raíz cuadrada al final (math.sqrt = raíz cuadrada)
     return mejor_nodo, math.sqrt(mejor_d2)
 
 
