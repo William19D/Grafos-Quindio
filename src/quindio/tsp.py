@@ -6,7 +6,7 @@ de i a j (puede ser distinto de d[j][i]: la matriz es asimétrica).
 Un recorrido es [0, a1, a2, ..., ak, 0]. Todas las funciones devuelven (costo, recorrido).
 
 Algoritmos propios:
-    permutaciones_heap: generador de permutaciones (algoritmo de Heap).
+    permutaciones_heap: lista de permutaciones (algoritmo de Heap), para ejemplos y pruebas.
     fuerza_bruta:       prueba las k! órdenes posibles.               O(k·k!)
     held_karp:          programación dinámica sobre subconjuntos.     O(k²·2^k)
     vecino_mas_cercano: heurística voraz.                             O(k²)
@@ -81,11 +81,44 @@ def costo_recorrido(d, recorrido):
     return total
 
 
-def _conjunto_texto(mascara, k):
-    """Convierte una máscara de bits en texto, p. ej. 0b101 -> "{1,3}" (solo para la traza)."""
+def valores_de_lugares(k):
+    """Devuelve la lista valor, con valor[j] = 2^(j-1) para j = 1..k+1: 1, 2, 4, 8, 16, ...
+
+    Held-Karp necesita guardar CONJUNTOS de lugares (por ejemplo "ya visité el 1 y el 3"). Para
+    poder usarlos como posición de una lista, cada conjunto se guarda como UN número entero:
+    cada lugar "vale" el doble que el anterior y el conjunto es la suma de lo que valen sus lugares.
+        lugar:  1  2  3  4  ...
+        valor:  1  2  4  8  ...
+        {1, 3} = 1 + 4 = 5      {2, 3} = 2 + 4 = 6      {1, 2, 3} = 1 + 2 + 4 = 7
+    Como cada valor es el doble del anterior, dos conjuntos distintos nunca suman lo mismo (es
+    escribir el conjunto en binario). Con k lugares hay 2^k conjuntos: los números de 0 a 2^k - 1.
+    La última casilla, valor[k + 1] = 2^k, es justamente esa cantidad de conjuntos.
+    """
+    valor = [0] * (k + 2)  # [0] * n = una lista con n ceros
+    valor[1] = 1
+    for j in range(2, k + 2):
+        valor[j] = valor[j - 1] * 2  # cada lugar vale el doble que el anterior
+    return valor
+
+
+def esta_en(conjunto, j, valor):
+    """¿El lugar j está en el conjunto? Se divide el conjunto por lo que vale j y se mira si el
+    resultado es impar.
+
+    '//' es la división entera (se bota la parte decimal: 7 // 2 = 3) y '% 2' es el residuo de
+    dividir por 2 (0 si el número es par, 1 si es impar).
+    Ejemplo con el conjunto 5 = {1, 3}:
+        lugar 3 (vale 4): 5 // 4 = 1 -> impar -> el 3 SÍ está
+        lugar 2 (vale 2): 5 // 2 = 2 -> par   -> el 2 NO está
+    """
+    return (conjunto // valor[j]) % 2 == 1
+
+
+def _conjunto_texto(conjunto, k, valor):
+    """Convierte el número de un conjunto en texto, p. ej. 5 -> "{1,3}" (solo para la traza)."""
     elementos = []
     for lugar in range(1, k + 1):
-        if mascara & (1 << (lugar - 1)):
+        if esta_en(conjunto, lugar, valor):
             elementos.append(str(lugar))
     return "{" + ",".join(elementos) + "}"
 
@@ -98,56 +131,78 @@ def _texto_lista(lista):
     return "-".join(partes)
 
 
+def _copia(lista):
+    """Copia una lista elemento por elemento (para guardar una permutación sin que cambie después)."""
+    nueva = []
+    for x in lista:
+        nueva.append(x)
+    return nueva
+
+
+def costo_de_orden(d, orden):
+    """Tiempo del recorrido 0 -> orden[0] -> orden[1] -> ... -> último -> 0, sumando tramo por tramo.
+
+    Ejemplo: d con orden [2, 3, 1] -> d[0][2] + d[2][3] + d[3][1] + d[1][0].
+    Complejidad: O(k) (k + 1 sumas).
+    """
+    k = len(orden)
+    costo = d[0][orden[0]]                         # de la partida al primer lugar
+    for t in range(k - 1):
+        costo = costo + d[orden[t]][orden[t + 1]]  # de cada lugar al siguiente
+    costo = costo + d[orden[k - 1]][0]             # del último lugar de vuelta a la partida
+    return costo
+
+
 # ---------------------------------------------------------------------------------------------
-# Generador de permutaciones (algoritmo de Heap)
+# Permutaciones (algoritmo de Heap)
 # ---------------------------------------------------------------------------------------------
 
 def permutaciones_heap(elementos):
-    """Genera todas las permutaciones de `elementos` con el algoritmo de Heap (versión iterativa).
+    """Lista con todas las permutaciones de `elementos`, en el orden del algoritmo de Heap.
 
-    Idea: cada permutación nueva se obtiene de la anterior con UN solo intercambio. Un contador
-    c[i] por posición recuerda cuántos intercambios lleva la posición i; cuando c[i] llega a i,
-    se reinicia y se pasa a la posición siguiente (como un odómetro).
-    OJO: entrega SIEMPRE la misma lista, modificada; quien la use debe copiarla para guardarla.
+    Solo se usa para ejemplos pequeños y para las pruebas (guarda las n! permutaciones). La fuerza
+    bruta NO usa esta función: aplica los mismos pasos, pero revisa cada permutación apenas la
+    genera, sin guardarlas todas (así su memoria es O(k) y no O(k·k!)).
+
+    Idea del algoritmo de Heap: cada permutación nueva se obtiene de la anterior con UN solo
+    intercambio. Un contador por posición, contador[i], recuerda cuántos intercambios lleva la
+    posición i; cuando llega a i se reinicia y se pasa a la posición siguiente (como un odómetro).
 
     Pseudocódigo (Heap 1963; Sedgewick 1977, secc. 2):
-        1. A <- copia de elementos; c[0..n-1] <- 0; entregar A
+        1. A <- copia de elementos; contador[0..n-1] <- 0; guardar A
         2. i <- 1
         3. mientras i < n:
-             3a. si c[i] < i:
+             3a. si contador[i] < i:
                    si i es par: intercambiar A[0] y A[i]
-                   si i es impar: intercambiar A[c[i]] y A[i]
-                   entregar A; c[i] <- c[i] + 1; i <- 1
-             3b. si no: c[i] <- 0; i <- i + 1
+                   si i es impar: intercambiar A[contador[i]] y A[i]
+                   guardar A; contador[i] <- contador[i] + 1; i <- 1
+             3b. si no: contador[i] <- 0; i <- i + 1
 
-    Complejidad: n! permutaciones con O(1) intercambios amortizados cada una -> O(n!) tiempo,
-    O(n) memoria (la lista A y los contadores c).
+    Complejidad: n! permutaciones y un intercambio por cada una.
     """
-    # Paso 1: la primera permutación es la lista tal cual
     n = len(elementos)
-    arreglo = list(elementos)
-    contador = [0] * n
-    yield arreglo
-    # Paso 2
-    i = 1
-    # Paso 3
-    while i < n:
+    arreglo = _copia(elementos)
+    contador = [0] * n  # [0] * n = una lista con n ceros
+    todas = [_copia(arreglo)]  # Paso 1: la primera permutación es la lista tal cual
+    i = 1  # Paso 2
+    while i < n:  # Paso 3
         if contador[i] < i:
             # Paso 3a: un intercambio produce la permutación siguiente
-            if i % 2 == 0:
+            if i % 2 == 0:       # i % 2 es el residuo de dividir por 2: 0 = par, 1 = impar
                 otra = 0
             else:
                 otra = contador[i]
             temporal = arreglo[otra]
             arreglo[otra] = arreglo[i]
             arreglo[i] = temporal
-            yield arreglo
+            todas.append(_copia(arreglo))
             contador[i] = contador[i] + 1
             i = 1
         else:
             # Paso 3b: esta posición ya dio todas sus vueltas; reiniciarla y pasar a la siguiente
             contador[i] = 0
             i = i + 1
+    return todas
 
 
 # ---------------------------------------------------------------------------------------------
@@ -158,52 +213,75 @@ def fuerza_bruta(d, traza=None):
     """TSP exacto probando todos los órdenes posibles de los lugares 1..k.
 
     Idea: el recorrido siempre empieza y termina en 0, así que basta probar las k! permutaciones
-    de 1..k, calcular el costo de cada una y quedarse con la menor.
+    de 1..k, calcular el costo de cada una y quedarse con la menor. Las permutaciones se generan
+    con el algoritmo de Heap (ver permutaciones_heap): cada una sale de la anterior con un solo
+    intercambio, y se revisa apenas se genera.
 
     Pseudocódigo:
         1. si k = 0: devolver (0, [0, 0])
-        2. lugares <- [1, 2, ..., k]; mejor_costo <- ∞
-        3. para cada permutación P de lugares (permutaciones_heap):
-             3a. costo <- d(0, P[0]) + Σ d(P[t], P[t+1]) + d(P[k-1], 0)
-             3b. si costo < mejor_costo: mejor_costo <- costo; mejor_orden <- copia de P
-        4. devolver (mejor_costo, [0] + mejor_orden + [0])
+        2. orden <- [1, 2, ..., k]; contador[0..k-1] <- 0
+        3. revisar la primera permutación: mejor_costo <- costo_de_orden(orden)
+        4. i <- 1; mientras i < k:   (algoritmo de Heap)
+             4a. si contador[i] < i:
+                   intercambiar orden[0] u orden[contador[i]] (según i sea par o impar) con orden[i]
+                   costo <- costo_de_orden(orden); si costo < mejor_costo: guardar este orden
+                   contador[i] <- contador[i] + 1; i <- 1
+             4b. si no: contador[i] <- 0; i <- i + 1
+        5. devolver (mejor_costo, [0] + mejor_orden + [0])
 
     Complejidad: k! permutaciones × O(k) para sumar cada una = O(k·k!) tiempo; O(k) memoria
-    (solo la permutación actual y la mejor). Fuente: Cormen, Leiserson, Rivest y Stein,
-    "Introduction to Algorithms", 3.ª ed., MIT Press, 2009, secc. 34.5.4 (el TSP) y
-    Sedgewick 1977 para el generador.
+    (solo la permutación actual, los contadores y la mejor). Fuente: Cormen, Leiserson, Rivest y
+    Stein, "Introduction to Algorithms", 3.ª ed., MIT Press, 2009, secc. 34.5.4 (el TSP) y
+    Sedgewick 1977 para el algoritmo de Heap.
     """
     n = len(d)
     k = n - 1
     # Paso 1: sin lugares que visitar
     if k == 0:
         return 0, [0, 0]
-    # Paso 2
-    lugares = []
+    # Paso 2: la primera permutación es 1, 2, ..., k
+    orden = []
     for lugar in range(1, n):
-        lugares.append(lugar)
-    mejor_costo = math.inf
-    mejor_orden = None
-    numero = 0
-    # Paso 3: recorrer todas las permutaciones
-    for orden in permutaciones_heap(lugares):
-        numero = numero + 1
-        # Paso 3a: costo del recorrido 0 -> orden[0] -> ... -> orden[k-1] -> 0
-        costo = d[0][orden[0]]
-        for t in range(k - 1):
-            costo = costo + d[orden[t]][orden[t + 1]]
-        costo = costo + d[orden[k - 1]][0]
-        # Paso 3b: ¿es el mejor hasta ahora?
-        mejora = costo < mejor_costo
-        if mejora:
-            mejor_costo = costo
-            mejor_orden = list(orden)  # copia: el generador reutiliza la misma lista
-        if traza is not None:
-            texto = f"permutación {numero}: 0-" + _texto_lista(orden) + f"-0 cuesta {costo}"
+        orden.append(lugar)
+    contador = [0] * k
+    # Paso 3: revisar la primera permutación
+    numero = 1
+    mejor_costo = costo_de_orden(d, orden)
+    mejor_orden = _copia(orden)
+    if traza is not None:
+        traza.append(f"permutación {numero}: 0-" + _texto_lista(orden) + f"-0 cuesta {mejor_costo}"
+                     + "  <- nuevo mejor")
+    # Paso 4: generar y revisar las demás con el algoritmo de Heap
+    i = 1
+    while i < k:
+        if contador[i] < i:
+            # Paso 4a: un intercambio produce la permutación siguiente
+            if i % 2 == 0:       # i % 2 es el residuo de dividir por 2: 0 = par, 1 = impar
+                otra = 0
+            else:
+                otra = contador[i]
+            temporal = orden[otra]
+            orden[otra] = orden[i]
+            orden[i] = temporal
+            # ... y se revisa: ¿es el mejor recorrido hasta ahora?
+            numero = numero + 1
+            costo = costo_de_orden(d, orden)
+            mejora = costo < mejor_costo
             if mejora:
-                texto = texto + "  <- nuevo mejor"
-            traza.append(texto)
-    # Paso 4: armar el recorrido completo
+                mejor_costo = costo
+                mejor_orden = _copia(orden)  # copia: 'orden' sigue cambiando
+            if traza is not None:
+                texto = f"permutación {numero}: 0-" + _texto_lista(orden) + f"-0 cuesta {costo}"
+                if mejora:
+                    texto = texto + "  <- nuevo mejor"
+                traza.append(texto)
+            contador[i] = contador[i] + 1
+            i = 1
+        else:
+            # Paso 4b: esta posición ya dio todas sus vueltas; reiniciarla y pasar a la siguiente
+            contador[i] = 0
+            i = i + 1
+    # Paso 5: armar el recorrido completo
     recorrido = [0]
     for lugar in mejor_orden:
         recorrido.append(lugar)
@@ -224,20 +302,25 @@ def held_karp(d, traza=None):
         caso base:   C({j}, j) = d(0, j)
         recurrencia: C(S, j)   = min_{i ∈ S\\{j}} [ C(S\\{j}, i) + d(i, j) ]
         respuesta:   min_{j} [ C(N, j) + d(j, 0) ],  N = {1..k}
-    S se guarda como máscara de bits: el bit j-1 está en 1 si el lugar j pertenece a S. La tabla
-    es una lista indexada por máscara: C[mascara][j-1]. padre[mascara][j-1] guarda el i que dio
-    el mínimo, para reconstruir el recorrido al final.
+    Cada conjunto S se guarda como un número (ver valores_de_lugares): el lugar j vale 2^(j-1) y
+    S es la suma de lo que valen sus lugares. Así la tabla es una lista de listas: C[S][j-1]
+    (j-1 porque las listas empiezan en la posición 0). padre[S][j-1] guarda el i que dio el
+    mínimo, para reconstruir el recorrido al final.
+    Operaciones con conjuntos, todas con sumas, restas y divisiones:
+        ¿j está en S?   (S // valor[j]) % 2 == 1      (ver esta_en)
+        S sin j:        S - valor[j]                   (si j está en S)
+        {j}:            valor[j]
 
     Pseudocódigo:
         1. si k = 0: devolver (0, [0, 0])
-        2. crear C y padre de 2^k filas × k columnas, llenas de ∞ / -1
+        2. valor <- [1, 2, 4, ...]; crear C y padre de 2^k filas × k columnas, llenas de ∞ / -1
         3. caso base: para cada j, C[{j}][j] <- d(0, j), padre <- 0
-        4. para cada máscara de 1 a 2^k - 1 (orden creciente: los subconjuntos van primero)
-           con 2 o más lugares, y para cada j en la máscara:
-             4a. sin_j <- máscara sin el bit de j
-             4b. C[máscara][j] <- min sobre i en sin_j de C[sin_j][i] + d(i, j); padre <- ese i
+        4. para cada conjunto S de 1 a 2^k - 1 (en orden: un subconjunto siempre es un número
+           menor, así que ya está calculado) y para cada j que esté en S:
+             4a. sin_j <- S - valor[j]; si sin_j = 0, S = {j} es caso base: seguir
+             4b. C[S][j] <- min sobre cada i de sin_j de C[sin_j][i] + d(i, j); padre <- ese i
         5. cerrar el ciclo: costo <- min_j C[N][j] + d(j, 0); último <- ese j
-        6. reconstruir: desde (N, último) seguir padre quitando cada lugar de la máscara hasta
+        6. reconstruir: desde (N, último) seguir padre restando cada lugar del conjunto hasta
            llegar a 0; invertir la lista y agregar 0 al principio y al final
 
     Complejidad: hay k·2^k pares (S, j) y cada uno revisa hasta k valores de i: O(k²·2^k)
@@ -249,70 +332,69 @@ def held_karp(d, traza=None):
     # Paso 1
     if k == 0:
         return 0, [0, 0]
-    total_mascaras = 1 << k  # 2^k subconjuntos
-    # Paso 2: tablas de 2^k filas y k columnas (columna j-1 = "termina en el lugar j")
+    # Paso 2: lo que vale cada lugar (1, 2, 4, 8, ...) y cuántos conjuntos hay (2^k)
+    valor = valores_de_lugares(k)
+    total_conjuntos = valor[k + 1]
     C = []
     padre = []
-    for mascara in range(total_mascaras):
-        C.append([math.inf] * k)
-        padre.append([-1] * k)
-    # Paso 3: caso base, subconjuntos de un solo lugar
+    for conjunto in range(total_conjuntos):
+        C.append([math.inf] * k)   # k casillas en ∞ (infinito: "todavía no hay camino")
+        padre.append([-1] * k)     # k casillas en -1 ("todavía no hay penúltimo")
+    # Paso 3: caso base, el conjunto {j} es el número valor[j]
     for j in range(1, k + 1):
-        mascara_j = 1 << (j - 1)
-        C[mascara_j][j - 1] = d[0][j]
-        padre[mascara_j][j - 1] = 0
+        C[valor[j]][j - 1] = d[0][j]
+        padre[valor[j]][j - 1] = 0
         if traza is not None:
             traza.append(f"caso base: C({{{j}}}, {j}) = d(0,{j}) = {d[0][j]}")
-    # Paso 4: llenar la tabla en orden creciente de máscara
-    for mascara in range(1, total_mascaras):
-        if mascara & (mascara - 1) == 0:
-            continue  # un solo bit: ya es caso base
+    # Paso 4: llenar la tabla, conjunto por conjunto en orden creciente
+    for conjunto in range(1, total_conjuntos):
         for j in range(1, k + 1):
-            bit_j = 1 << (j - 1)
-            if mascara & bit_j == 0:
-                continue  # j no está en S
-            # Paso 4a: S sin j
-            sin_j = mascara ^ bit_j
-            # Paso 4b: probar cada i de S \ {j} como penúltimo lugar
+            if (conjunto // valor[j]) % 2 == 0:
+                continue  # j no está en el conjunto (ver esta_en)
+            # Paso 4a: el conjunto sin j es restar lo que vale j
+            sin_j = conjunto - valor[j]
+            if sin_j == 0:
+                continue  # el conjunto era solo {j}: es el caso base, ya está lleno
+            # Paso 4b: probar cada i del conjunto sin j como penúltimo lugar
             mejor = math.inf
             mejor_i = -1
             candidatos_texto = []
             for i in range(1, k + 1):
-                bit_i = 1 << (i - 1)
-                if sin_j & bit_i == 0:
-                    continue
+                if (sin_j // valor[i]) % 2 == 0:
+                    continue  # i no está en el conjunto sin j
                 candidato = C[sin_j][i - 1] + d[i][j]
                 if traza is not None:
                     candidatos_texto.append(
-                        f"C({_conjunto_texto(sin_j, k)},{i})+d({i},{j}) = {C[sin_j][i - 1]}+{d[i][j]} = {candidato}")
+                        f"C({_conjunto_texto(sin_j, k, valor)},{i})+d({i},{j}) = "
+                        f"{C[sin_j][i - 1]}+{d[i][j]} = {candidato}")
                 if candidato < mejor:
                     mejor = candidato
                     mejor_i = i
-            C[mascara][j - 1] = mejor
-            padre[mascara][j - 1] = mejor_i
+            C[conjunto][j - 1] = mejor
+            padre[conjunto][j - 1] = mejor_i
             if traza is not None:
-                traza.append(f"C({_conjunto_texto(mascara, k)}, {j}) = min[ " + " ; ".join(candidatos_texto)
-                             + f" ] = {mejor}  (penúltimo = {mejor_i})")
+                traza.append(f"C({_conjunto_texto(conjunto, k, valor)}, {j}) = min[ "
+                             + " ; ".join(candidatos_texto) + f" ] = {mejor}  (penúltimo = {mejor_i})")
     # Paso 5: cerrar el ciclo volviendo a 0
-    completa = total_mascaras - 1
+    completo = total_conjuntos - 1  # el conjunto con todos los lugares: 1 + 2 + 4 + ... = 2^k - 1
     mejor_costo = math.inf
     ultimo = -1
     for j in range(1, k + 1):
-        costo = C[completa][j - 1] + d[j][0]
+        costo = C[completo][j - 1] + d[j][0]
         if traza is not None:
-            traza.append(f"cierre: C({_conjunto_texto(completa, k)},{j}) + d({j},0) = "
-                         f"{C[completa][j - 1]}+{d[j][0]} = {costo}")
+            traza.append(f"cierre: C({_conjunto_texto(completo, k, valor)},{j}) + d({j},0) = "
+                         f"{C[completo][j - 1]}+{d[j][0]} = {costo}")
         if costo < mejor_costo:
             mejor_costo = costo
             ultimo = j
     # Paso 6: reconstruir el recorrido hacia atrás con la tabla padre
     al_reves = []
-    mascara = completa
+    conjunto = completo
     actual = ultimo
     while actual != 0:
         al_reves.append(actual)
-        anterior = padre[mascara][actual - 1]
-        mascara = mascara ^ (1 << (actual - 1))  # quitar el lugar actual del conjunto
+        anterior = padre[conjunto][actual - 1]
+        conjunto = conjunto - valor[actual]  # quitar el lugar actual del conjunto
         actual = anterior
     recorrido = [0]
     posicion = len(al_reves) - 1
