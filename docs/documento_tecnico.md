@@ -939,7 +939,7 @@ ejecución aparte de la de tiempo):
 | 8 | 4 096 | 32 KB | 0.080 |
 | 10 | 20 480 | 160 KB | 0.394 |
 | 12 | 98 304 | 768 KB | 1.807 |
-| 14 | 458 752 | 3.5 MB | 8.129 |
+| 14 | 458 752 | 3.5 MB | 8.130 |
 | 16 | 2 097 152 | 16 MB | 36.069 |
 
 **Discusión.** El pico real es ≈ 2.3 veces el estimado a 8 B. En Python cada casilla es un puntero
@@ -983,42 +983,40 @@ Soluciones exactas (`resultados/r4_exactos.csv`, **tiempos en ms**):
 
 | k | Tiempo fuerza bruta (ms) | Tiempo Held-Karp (ms) | Óptimo (min) | ¿Mismo costo? |
 |---|---|---|---|---|
-| 5 | 0.138 | 0.248 | 151.1 | sí |
-| 6 | 0.913 | 0.350 | 161.3 | sí |
-| 7 | 7.505 | 0.908 | 311.4 | sí |
-| 8 | 62.051 | 2.313 | 325.1 | sí |
-| 9 | 656.317 | 6.055 | 345.3 | sí |
-| 10 | 6 638.790 | 13.938 | 291.3 | sí |
-| 11 | 84 030.081 (1 repetición, > 1 min) | 36.491 | 320.9 | sí |
-| 12 | no completada (> 5 min) | 81.215 | 376.7 | solo Held-Karp |
+| 5 | 0.163 | 0.056 | 151.1 | sí |
+| 6 | 0.417 | 0.150 | 161.3 | sí |
+| 7 | 3.508 | 0.379 | 311.4 | sí |
+| 8 | 28.410 | 0.907 | 325.1 | sí |
+| 9 | 275.981 | 2.399 | 345.3 | sí |
+| 10 | 4 099.863 | 5.509 | 291.3 | sí |
+| 11 | 37 100.346 (1 repetición, > 1 min) | 12.854 | 320.9 | sí |
+| 12 | no completada (> 5 min) | 29.927 | 376.7 | solo Held-Karp |
 
 Mayor k resuelto: **fuerza bruta k = 11; Held-Karp k = 12** (todos los pedidos). Extra
-(`resultados/r4_held_karp_extendido.csv`): Held-Karp con k = 13 → 185.9 ms, 14 → 440.0 ms,
-15 → 1 001.1 ms, 16 → 2 224.3 ms.
+(`resultados/r4_held_karp_extendido.csv`): Held-Karp con k = 13 → 72.3 ms, 14 → 161.8 ms,
+15 → 377.7 ms, 16 → 832.9 ms (corrida del 2026-11-15, después de simplificar el código de R4).
 
 ![Tiempo vs k](../resultados/figuras/r4_tiempo_vs_k.png)
 
 **Discusión.** Coincide con la teoría. En la fuerza bruta el cociente entre k y k − 1 debería ser
-k·k! / ((k−1)·(k−1)!) = k²/(k−1): 8.2, 9.1, 10.1, 11.1 y 12.1 para k = 7..11; se midió 8.2, 8.3,
-10.6, 10.1 y 12.7, y tiempo/(k·k!) se mantiene entre 183 y 230 ns. A ese ritmo k = 12 necesitaría
-≈ 84 s × 12²/11 ≈ 1 100 s ≈ 18 min: por eso «no completada», como se esperaba. En Held-Karp el
-cociente teórico es ≈ 2·(k/(k−1))² ≈ 2.3–2.7 y se midió 2.2–2.6 desde k = 7 (también en la
-extensión hasta 16); tiempo/(k(k−1)·2^(k−2)) queda entre 566 y 676 ns para k = 7..16. La única
-desviación es k = 5 (0.248 ms, 1 550 ns por unidad): con tan poco trabajo pesa el costo fijo de
-crear las tablas (en `r4_calidad_detalle.csv` las instancias de k = 5 tardan 0.14 ms). En la gráfica
-la fuerza bruta es una curva que se empina (factorial) y Held-Karp casi una recta en escala log
-(exponencial con factor polinomial). En k = 5 la fuerza bruta es más rápida (120 permutaciones
-contra preparar las tablas); desde k = 6 gana Held-Karp y en k = 11 es ≈ 2 300 veces más rápido.
+k·k! / ((k−1)·(k−1)!) = k²/(k−1): 8.2, 9.1, 10.1, 11.1 y 12.1 para k = 7..11; se midió 8.4, 8.1,
+9.7, 14.9 y 9.0 (los saltos varían con la carga de la máquina), pero tiempo/(k·k!) se mantiene entre
+84 y 113 ns desde k = 6. A ese ritmo k = 12 necesitaría ≈ 37 s × 12²/11 ≈ 490 s ≈ 8 min: por eso
+«no completada», como se esperaba. En Held-Karp el cociente teórico es ≈ 2·(k/(k−1))² ≈ 2.3–2.7 y se
+midió 2.2–2.7 en todos los pasos de k = 5 a 16; tiempo/(k(k−1)·2^(k−2)) baja suavemente de 350 a
+212 ns. En la gráfica la fuerza bruta es una curva que se empina (factorial) y Held-Karp casi una
+recta en escala log (exponencial con factor polinomial). Held-Karp gana desde k = 5 (0.056 ms contra
+0.163 ms) y en k = 11 es ≈ 2 900 veces más rápido.
 
 Calidad de la heurística (`resultados/r4_calidad.csv`; detalle en `r4_calidad_detalle.csv`;
 brecha % = (voraz − óptimo) / óptimo × 100; **tiempos en ms**):
 
 | k | Instancias | Brecha promedio (%) | Brecha máxima (%) | Brecha mínima (%) | Tiempo voraz (ms, mediana) | Tiempo Held-Karp (ms, mediana) |
 |---|---|---|---|---|---|---|
-| 5 | 5 | 3.09 | 5.38 | 0.74 | 0.006 | 0.144 |
-| 8 | 5 | 8.51 | 14.53 | 0.01 | 0.010 | 2.521 |
-| 10 | 5 | 6.40 | 9.84 | 2.44 | 0.014 | 16.449 |
-| 12 | 5 | 10.74 | 16.94 | 4.98 | 0.019 | 90.101 |
+| 5 | 5 | 3.09 | 5.38 | 0.74 | 0.002 | 0.055 |
+| 8 | 5 | 8.51 | 14.53 | 0.01 | 0.004 | 0.961 |
+| 10 | 5 | 6.40 | 9.84 | 2.44 | 0.005 | 5.635 |
+| 12 | 5 | 10.74 | 16.94 | 4.98 | 0.007 | 31.919 |
 
 **Discusión.** En ninguna de las 20 instancias la voraz encontró el óptimo (la más cercana: 0.007 %
 en k = 8). La brecha tiende a crecer con k (promedio 3 % → 11 %, máxima 5 % → 17 %): con más lugares
@@ -1026,7 +1024,7 @@ hay más decisiones locales que pueden salir mal y el regreso final suele ser la
 (k = 10 promedia menos que k = 8) porque con 5 instancias por k la variación entre instancias es
 grande. Es coherente con la teoría: no hay garantía constante (Rosenkrantz et al. 1977), pero con
 desigualdad triangular queda a pocas decenas de por ciento. A cambio, la voraz es miles de veces más
-rápida (0.019 ms contra 90 ms en k = 12).
+rápida (0.007 ms contra 32 ms en k = 12).
 
 **Itinerario de un día** (lugar de partida: Plaza de Bolívar de Armenia, `ARM`). Conjunto elegido,
 7 atractivos de patrimonio y miradores del eje Armenia–Calarcá–Circasia–Filandia–Salento: Museo del
@@ -1154,8 +1152,8 @@ de referencia; los tiempos oficiales son los de los experimentos (5 repeticiones
    lineal. SciPy (Qhull, el mismo algoritmo en C) es entre 1.7 y 9.3 veces más rápido: la diferencia
    es de constante (lenguaje compilado frente a interpretado), no de complejidad, y el cociente crece
    con n porque SciPy tiene un costo fijo de ≈ 2 ms.
-4. **Ruta óptima.** La teoría se cumple con precisión: la fuerza bruta llegó a k = 11 (84 s) y no pudo
-   con k = 12 (≈ 18 min estimados), mientras Held-Karp resolvió k = 12 en 81 ms y k = 16 en 2.2 s, a
+4. **Ruta óptima.** La teoría se cumple con precisión: la fuerza bruta llegó a k = 11 (37 s) y no pudo
+   con k = 12 (≈ 8 min estimados), mientras Held-Karp resolvió k = 12 en 30 ms y k = 16 en 0.8 s, a
    costa de una memoria que se duplica por cada lugar (36 MiB en k = 16). La heurística voraz es
    miles de veces más rápida pero nunca encontró el óptimo en las 20 instancias (brecha promedio de
    3 a 11 %). El itinerario elegido no cabía en 11 h (12.26 h) y, quitando el Jardín Botánico, quedó

@@ -177,43 +177,41 @@ mismo óptimo** en todos los k que la fuerza bruta resolvió (k = 5..11: coincid
 
 | k | Tiempo fuerza bruta (ms) | Tiempo Held-Karp (ms) | Óptimo (min) | ¿Mismo costo? |
 |---|---|---|---|---|
-| 5 | 0.138 | 0.248 | 151.1 | sí |
-| 6 | 0.913 | 0.350 | 161.3 | sí |
-| 7 | 7.505 | 0.908 | 311.4 | sí |
-| 8 | 62.051 | 2.313 | 325.1 | sí |
-| 9 | 656.317 | 6.055 | 345.3 | sí |
-| 10 | 6 638.790 | 13.938 | 291.3 | sí |
-| 11 | 84 030.081 (1 repetición, > 1 min) | 36.491 | 320.9 | sí |
-| 12 | no completada (> 5 min) | 81.215 | 376.7 | solo Held-Karp |
+| 5 | 0.163 | 0.056 | 151.1 | sí |
+| 6 | 0.417 | 0.150 | 161.3 | sí |
+| 7 | 3.508 | 0.379 | 311.4 | sí |
+| 8 | 28.410 | 0.907 | 325.1 | sí |
+| 9 | 275.981 | 2.399 | 345.3 | sí |
+| 10 | 4 099.863 | 5.509 | 291.3 | sí |
+| 11 | 37 100.346 (1 repetición, > 1 min) | 12.854 | 320.9 | sí |
+| 12 | no completada (> 5 min) | 29.927 | 376.7 | solo Held-Karp |
 
 Mayor k resuelto: **fuerza bruta k = 11**; **Held-Karp k = 12** (todos los pedidos; como extra,
-`r4_held_karp_extendido.csv`: k = 13 → 185.9 ms, 14 → 440.0 ms, 15 → 1 001.1 ms,
-16 → 2 224.3 ms).
+`r4_held_karp_extendido.csv`: k = 13 → 72.3 ms, 14 → 161.8 ms, 15 → 377.7 ms,
+16 → 832.9 ms; corrida del 2026-11-15 con el código simplificado).
 
 Gráfica: `resultados/figuras/r4_tiempo_vs_k.png` (k en x, ms en y, escala logarítmica).
 
 **Discusión.** Lo medido coincide con la teoría. Para la fuerza bruta, el cociente entre k y
 k − 1 debería ser k·k!/((k−1)·(k−1)!) = k²/(k−1): 8.2, 9.1, 10.1, 11.1, 12.1 para k = 7..11; se
-midió 8.2, 8.3, 10.6, 10.1 y 12.7. Dicho de otra forma, el tiempo por unidad de trabajo
-tiempo/(k·k!) se mantiene casi constante, entre 183 y 230 ns. Con ese ritmo, k = 12 necesitaría
-≈ 84 s × 12²/11 ≈ 1 100 s ≈ 18 min, muy por encima del límite: por eso «no completada», como se
-esperaba. Para Held-Karp el cociente teórico entre k y k − 1 es ≈ 2(k/(k−1))² ≈ 2.3-2.7 y se
-midió 2.2-2.6 desde k = 7 (también en la extensión hasta 16); tiempo/(k(k−1)·2^(k−2)) ≈ 570-680 ns,
-estable. La única desviación es k = 5 (0.248 ms, 1 550 ns por unidad): con tan poco trabajo pesa
-el costo fijo (crear las tablas, llamar la función); en `r4_calidad_detalle.csv` las instancias
-de k = 5 tardan 0.14 ms. En la gráfica la fuerza bruta es una curva que se empina (factorial) y
-Held-Karp una recta de pendiente casi fija en escala log (exponencial 2^k con un factor
-polinomial). Para k = 5 la fuerza bruta es incluso más rápida (120 permutaciones contra la
-preparación de las tablas), pero desde k = 6 Held-Karp gana y en k = 11 es ≈ 2 300 veces más rápido.
+midió 8.4, 8.1, 9.7, 14.9 y 9.0 (los saltos de una medición a otra varían con la carga de la
+máquina). Lo estable es el tiempo por unidad de trabajo, tiempo/(k·k!): entre 84 y 113 ns desde
+k = 6. Con ese ritmo, k = 12 necesitaría ≈ 37 s × 12²/11 ≈ 490 s ≈ 8 min, por encima del límite:
+por eso «no completada», como se esperaba. Para Held-Karp el cociente teórico entre k y k − 1 es
+≈ 2(k/(k−1))² ≈ 2.3-2.7 y se midió 2.2-2.7 en todos los pasos de k = 5 a 16;
+tiempo/(k(k−1)·2^(k−2)) baja suavemente de 350 a 212 ns. En la gráfica la fuerza bruta es una
+curva que se empina (factorial) y Held-Karp una recta de pendiente casi fija en escala log
+(exponencial 2^k con un factor polinomial). Held-Karp gana desde k = 5 (0.056 ms contra 0.163 ms)
+y en k = 11 es ≈ 2 900 veces más rápido.
 
 ### 6.2 Calidad de la heurística (`resultados/r4_calidad.csv`; detalle en `r4_calidad_detalle.csv`)
 
 | k | Instancias | Brecha promedio (%) | Brecha máxima (%) | Brecha mínima (%) | Tiempo voraz (ms, mediana) | Tiempo Held-Karp (ms, mediana) |
 |---|---|---|---|---|---|---|
-| 5 | 5 | 3.09 | 5.38 | 0.74 | 0.006 | 0.144 |
-| 8 | 5 | 8.51 | 14.53 | 0.01 | 0.010 | 2.521 |
-| 10 | 5 | 6.40 | 9.84 | 2.44 | 0.014 | 16.449 |
-| 12 | 5 | 10.74 | 16.94 | 4.98 | 0.019 | 90.101 |
+| 5 | 5 | 3.09 | 5.38 | 0.74 | 0.002 | 0.055 |
+| 8 | 5 | 8.51 | 14.53 | 0.01 | 0.004 | 0.961 |
+| 10 | 5 | 6.40 | 9.84 | 2.44 | 0.005 | 5.635 |
+| 12 | 5 | 10.74 | 16.94 | 4.98 | 0.007 | 31.919 |
 
 brecha % = (voraz − óptimo Held-Karp) / óptimo × 100.
 
@@ -223,7 +221,7 @@ brecha % = (voraz − óptimo Held-Karp) / óptimo × 100.
 suele ser largo. No es monótona (k = 10 promedia menos que k = 8) porque con solo 5 instancias por
 k la variación entre instancias es grande. Es coherente con la teoría: no hay garantía constante
 (Rosenkrantz et al. 1977), pero en la práctica con desigualdad triangular queda a pocas decenas de
-por ciento. A cambio la voraz es miles de veces más rápida (0.019 ms contra 90 ms en k = 12) y su
+por ciento. A cambio la voraz es miles de veces más rápida (0.007 ms contra 32 ms en k = 12) y su
 tiempo crece casi lineal en el rango medido (O(k²) con k pequeño, dominado por el costo fijo).
 
 ### 6.3 Itinerario de un día (lugar de partida: Plaza de Bolívar de Armenia, `ARM`)
