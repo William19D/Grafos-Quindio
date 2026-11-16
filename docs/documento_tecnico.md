@@ -1170,19 +1170,41 @@ de referencia; los tiempos oficiales son los de los experimentos (5 repeticiones
 
 ## 4. Anexo: uso de inteligencia artificial
 
-[Completar por el grupo]
-
 ### 4.1 Herramientas usadas
 
-[Completar por el grupo]
+| Herramienta | Para qué la usamos | Cómo verificamos lo que respondió |
+|---|---|---|
+| Claude (Anthropic), usado con Claude Code | Escribir el código de los algoritmos a partir de nuestras especificaciones de `specs/`; simplificarlo para poder explicarlo paso a paso (por ejemplo, en Held-Karp cambiamos las operaciones de bits por sumas, restas y divisiones); correr los experimentos y armar tablas, gráficas y capturas; redactar y organizar este documento y una guía de estudio para la sustentación. | Pruebas automáticas, comparación con NetworkX, SciPy y OSMnx, casos pequeños resueltos a mano y revisión de cada número contra los archivos de `resultados/` (detalle en 4.3). |
 
 ### 4.2 Para qué se usaron
 
-[Completar por el grupo]
+Antes de programar cada requerimiento escribimos su especificación en `specs/` (R1 a R5 y el
+catálogo), con lo que debía hacer y sus casos de prueba. Con esa especificación le pedíamos el código
+a la IA y después lo revisábamos. También la usamos para redactar el documento con palabras sencillas
+y para preparar la sustentación.
 
 ### 4.3 Cómo se verificaron las respuestas
 
-[Completar por el grupo]
+- **Pruebas automáticas:** el proyecto tiene 58 pruebas (`pytest`) y todas pasan. Un código solo lo
+  aceptábamos si cumplía su especificación.
+- **Comparación con librerías** (el enunciado solo permite usarlas para comprobar): Dijkstra da los
+  mismos caminos que NetworkX en grafos aleatorios; nuestro montículo da el mismo orden que `heapq`;
+  QuickHull da la misma envolvente que `scipy.spatial.ConvexHull`; la lectura de velocidades coincide
+  con OSMnx en las 1 307 aristas que la tienen; el nodo más cercano coincide con `ox.nearest_nodes`;
+  Held-Karp da el mismo costo que la fuerza bruta.
+- **Casos a mano:** resolvimos en papel un grafo pequeño para Dijkstra, un cuadrado con puntos
+  interiores para QuickHull y un ejemplo de 4 lugares para Held-Karp y el vecino más cercano, y los
+  comparamos con la traza paso a paso que imprime el programa.
+- **Cambios de código:** cuando simplificamos Held-Karp, comparamos el código nuevo con el anterior en
+  32 matrices aleatorias y en el ejemplo, y dieron exactamente lo mismo.
+- **Errores que encontramos y corregimos:** una medición de R4 salió alterada porque se corrió al
+  mismo tiempo que las pruebas, así que la repetimos con el computador sin otra carga; y la
+  complejidad escrita en `red.py` olvidaba el ordenamiento por inserción, así que la corregimos a
+  O(E) + O(T²).
+- **Datos del catálogo:** las pruebas revisan que cada lugar esté dentro del Quindío, que haya una
+  cabecera por municipio y que cada duración tenga su fuente.
+
+Los dos integrantes revisamos todo el código y podemos explicar y modificar cualquier parte.
 
 ---
 
