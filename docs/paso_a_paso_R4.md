@@ -85,37 +85,40 @@ posible: si hubiera uno más corto, se cambiaría y el camino a j mejoraría, co
 - C(S, j) = min sobre i ∈ S \ {j} de [ C(S \ {j}, i) + d(i, j) ]
 - Respuesta: min sobre j de [ C({1,2,3}, j) + d(j, 0) ]
 
-**Máscaras.** S se guarda como un número binario: bit 0 = lugar 1, bit 1 = lugar 2, bit 2 =
-lugar 3. Así {1,3} = 101₂ = 5. La tabla es una lista `C[mascara][j-1]`. Se llena en orden
-creciente de máscara; un subconjunto siempre tiene máscara menor que el conjunto que lo
-contiene, así que cuando se necesita `C[S \ {j}]` ya está calculado.
+**Conjuntos como números.** Cada lugar "vale" el doble que el anterior: lugar 1 = 1, lugar 2 = 2,
+lugar 3 = 4. Un conjunto S se guarda como la suma de lo que valen sus lugares: {1,3} = 1 + 4 = 5,
+{2,3} = 2 + 4 = 6, {1,2,3} = 7. Para saber si un lugar está en S se divide S por lo que vale el
+lugar (división entera) y se mira si da impar: 5 // 4 = 1 (impar, el 3 está); 5 // 2 = 2 (par, el
+2 no está). Quitar un lugar es restar lo que vale: {1,3} sin el 3 = 5 − 4 = 1 = {1}. La tabla es
+una lista `C[S][j-1]` que se llena del conjunto 1 al 7; un subconjunto siempre es un número menor
+que el conjunto que lo contiene, así que cuando se necesita `C[S \ {j}]` ya está calculado.
 
 Pseudocódigo:
 
 1. Si k = 0, devolver (0, [0, 0]).
-2. Crear `C` y `padre` de 2^k = 8 filas × k = 3 columnas (∞ / -1).
+2. Valores de los lugares: 1, 2, 4. Crear `C` y `padre` de 2^k = 8 filas × k = 3 columnas (∞ / -1).
 3. Caso base: `C[{j}][j] = d(0, j)`, `padre = 0`.
-4. Para cada máscara con 2 o más lugares y cada j dentro: 4a. `sin_j = máscara sin j`;
+4. Para cada conjunto (de 1 a 7) y cada j que esté en él: 4a. `sin_j = S - valor[j]` (si da 0, S = {j} es caso base y se salta);
    4b. probar cada i de `sin_j`, quedarse con el menor `C[sin_j][i] + d(i, j)` y guardar ese i en `padre`.
 5. Cerrar el ciclo: el menor `C[N][j] + d(j, 0)`.
 6. Reconstruir con `padre` hacia atrás.
 
 ### Llenado de la tabla (orden de la traza)
 
-| Máscara | S | j | Candidatos (i: C(S\{j}, i) + d(i, j)) | C(S, j) | padre |
+| Número | S | j | Candidatos (i: C(S\{j}, i) + d(i, j)) | C(S, j) | padre |
 |---|---|---|---|---|---|
-| 001 | {1} | 1 | caso base d(0,1) | 2 | 0 |
-| 010 | {2} | 2 | caso base d(0,2) | 9 | 0 |
-| 100 | {3} | 3 | caso base d(0,3) | 10 | 0 |
-| 011 | {1,2} | 1 | i=2: 9 + 7 = 16 | 16 | 2 |
-| 011 | {1,2} | 2 | i=1: 2 + 6 = 8 | 8 | 1 |
-| 101 | {1,3} | 1 | i=3: 10 + 3 = 13 | 13 | 3 |
-| 101 | {1,3} | 3 | i=1: 2 + 4 = 6 | 6 | 1 |
-| 110 | {2,3} | 2 | i=3: 10 + 12 = 22 | 22 | 3 |
-| 110 | {2,3} | 3 | i=2: 9 + 8 = 17 | 17 | 2 |
-| 111 | {1,2,3} | 1 | i=2: 22 + 7 = 29 ; i=3: 17 + 3 = **20** | 20 | 3 |
-| 111 | {1,2,3} | 2 | i=1: 13 + 6 = 19 ; i=3: 6 + 12 = **18** | 18 | 3 |
-| 111 | {1,2,3} | 3 | i=1: 16 + 4 = 20 ; i=2: 8 + 8 = **16** | 16 | 2 |
+| 1 = 1 | {1} | 1 | caso base d(0,1) | 2 | 0 |
+| 2 = 2 | {2} | 2 | caso base d(0,2) | 9 | 0 |
+| 4 = 4 | {3} | 3 | caso base d(0,3) | 10 | 0 |
+| 3 = 1+2 | {1,2} | 1 | i=2: 9 + 7 = 16 | 16 | 2 |
+| 3 = 1+2 | {1,2} | 2 | i=1: 2 + 6 = 8 | 8 | 1 |
+| 5 = 1+4 | {1,3} | 1 | i=3: 10 + 3 = 13 | 13 | 3 |
+| 5 = 1+4 | {1,3} | 3 | i=1: 2 + 4 = 6 | 6 | 1 |
+| 6 = 2+4 | {2,3} | 2 | i=3: 10 + 12 = 22 | 22 | 3 |
+| 6 = 2+4 | {2,3} | 3 | i=2: 9 + 8 = 17 | 17 | 2 |
+| 7 = 1+2+4 | {1,2,3} | 1 | i=2: 22 + 7 = 29 ; i=3: 17 + 3 = **20** | 20 | 3 |
+| 7 = 1+2+4 | {1,2,3} | 2 | i=1: 13 + 6 = 19 ; i=3: 6 + 12 = **18** | 18 | 3 |
+| 7 = 1+2+4 | {1,2,3} | 3 | i=1: 16 + 4 = 20 ; i=2: 8 + 8 = **16** | 16 | 2 |
 
 ### Cierre del ciclo
 
@@ -127,11 +130,11 @@ Pseudocódigo:
 
 ### Reconstrucción (paso 6)
 
-| Máscara actual | Lugar actual | padre[máscara][lugar] | Máscara sin el lugar |
+| Conjunto actual | Lugar actual | padre[conjunto][lugar] | Conjunto sin el lugar (resta) |
 |---|---|---|---|
-| 111 | 1 | 3 | 110 |
-| 110 | 3 | 2 | 010 |
-| 010 | 2 | 0 (fin) | 000 |
+| 7 = {1,2,3} | 1 | 3 | 7 − 1 = 6 = {2,3} |
+| 6 = {2,3} | 3 | 2 | 6 − 4 = 2 = {2} |
+| 2 = {2} | 2 | 0 (fin) | 2 − 2 = 0 = {} |
 
 Lista al revés: [1, 3, 2] → invertida: [2, 3, 1] → **recorrido 0-2-3-1-0, costo 21**, igual que
 la fuerza bruta. Trabajo: k·2^k = 24 casillas, cada una con a lo sumo k candidatos → O(k²·2^k).

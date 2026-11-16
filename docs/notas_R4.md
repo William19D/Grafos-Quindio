@@ -36,14 +36,16 @@ Ninguno usa librerías que resuelvan el problema: ni `itertools`, ni NetworkX, n
 bucles explícitos, variables con nombre en español, docstring con pseudocódigo numerado y
 comentarios `# Paso n` que corresponden a ese pseudocódigo.
 
-### 2.1 Generador de permutaciones: algoritmo de Heap (`permutaciones_heap`)
+### 2.1 Permutaciones: algoritmo de Heap (`permutaciones_heap` y dentro de `fuerza_bruta`)
 
 En vez de `itertools.permutations` se escribió el algoritmo de Heap en versión iterativa (B. R.
 Heap, "Permutations by interchanges", *The Computer Journal* 6(3), 293-294, 1963; R. Sedgewick,
 "Permutation generation methods", *ACM Computing Surveys* 9(2), 137-164, 1977, secc. 2). Cada
 permutación sale de la anterior con **un solo intercambio**, guiado por un contador por posición
 que funciona como odómetro. Tiempo O(n!) (O(1) amortizado por permutación), memoria O(n).
-Entrega siempre la misma lista modificada: la fuerza bruta la copia solo cuando encuentra una mejor.
+La fuerza bruta aplica estos pasos dentro de su propio ciclo: genera una permutación, calcula
+su costo con `costo_de_orden` y la descarta (solo copia la mejor), sin guardarlas todas.
+`permutaciones_heap` devuelve la lista completa y solo se usa en ejemplos pequeños y en las pruebas.
 
 ### 2.2 Fuerza bruta (`fuerza_bruta`)
 
@@ -73,15 +75,17 @@ travelling salesman problem", *Journal of the ACM* 9(1), 61-63, 1962):
 - C(S, j) = min_{i ∈ S \ {j}} [ C(S \ {j}, i) + d(i, j) ]
 - Respuesta: min_{j ∈ N} [ C(N, j) + d(j, 0) ]
 
-**Implementación.** S es una máscara de bits (bit j−1 = lugar j). Las tablas `C[mascara][j-1]` y
-`padre[mascara][j-1]` son **listas indexadas por máscara** (no diccionarios de tuplas). Se llenan
-en orden creciente de máscara: S \ {j} siempre es un número menor que S, así que ya está
-calculado. `padre` guarda el i del mínimo y permite **reconstruir el recorrido** (no solo el
+**Implementación.** Cada conjunto S se guarda como un número: el lugar j "vale" 2^(j−1)
+(1, 2, 4, 8, …) y S es la suma de lo que valen sus lugares, por ejemplo {1, 3} = 1 + 4 = 5
+(`valores_de_lugares`). Todo se hace con sumas, restas y divisiones: ¿j está en S? =
+`(S // valor[j]) % 2 == 1` (dividir y ver si da impar, `esta_en`); S sin j = `S - valor[j]`;
+{j} = `valor[j]`. Las tablas `C[S][j-1]` y `padre[S][j-1]` son listas de listas. Se llenan
+en orden creciente: S \ {j} siempre es un número menor que S, así que ya está calculado. `padre` guarda el i del mínimo y permite **reconstruir el recorrido** (no solo el
 costo) caminando hacia atrás desde (N, último).
 
-Pseudocódigo: (1) caso k = 0; (2) crear tablas de 2^k × k; (3) caso base; (4) para cada máscara
-de 2 o más bits y cada j de la máscara, probar cada i de S \ {j}; (5) cerrar el ciclo; (6)
-reconstruir con `padre` e invertir.
+Pseudocódigo: (1) caso k = 0; (2) valores 1, 2, 4, … y tablas de 2^k × k; (3) caso base; (4) para
+cada conjunto y cada j que esté en él (si S sin j queda vacío es el caso base), probar cada i de
+S \ {j}; (5) cerrar el ciclo; (6) reconstruir con `padre` restando cada lugar e invertir.
 
 **Complejidad**: k·2^k pares (S, j), cada uno revisa hasta k valores de i → **O(k² · 2^k)**
 tiempo. Contando exacto, las combinaciones válidas (S, j, i) con i ≠ j en S son
@@ -146,7 +150,7 @@ ejecuciones de Held-Karp, O(k³·2^k); con k ≤ 8 es instantáneo.
 | Prueba (`tests/test_r4.py`) | Qué comprueba |
 |---|---|
 | `test_ejemplo_a_mano` | matriz asimétrica 4 × 4 resuelta a mano: fuerza bruta y Held-Karp dan 21 con 0-2-3-1-0; la voraz da 33 con 0-1-3-2-0 |
-| `test_permutaciones_heap` | el generador da las 120 permutaciones de 5 elementos, iguales a `itertools.permutations` (solo en la prueba) |
+| `test_permutaciones_heap` | `permutaciones_heap` da las 120 permutaciones de 5 elementos, iguales a `itertools.permutations` (solo en la prueba) |
 | `test_held_karp_igual_fuerza_bruta[1..8]` | matrices aleatorias asimétricas (semilla 2026 + n, k = 0..7, 5 por tamaño): mismo costo; ambos recorridos válidos y cuestan lo reportado |
 | `test_vecino_mas_cercano_valido` | permutación válida, costo = suma del recorrido, costo ≥ óptimo |
 | `test_itinerario_cabe_en_11_horas` | con la matriz real, el itinerario ajustado dura ≤ 11 h, termina en «Regreso» a ARM y los totales coinciden con la suma de las filas |

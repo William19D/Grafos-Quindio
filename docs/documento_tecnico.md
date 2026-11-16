@@ -915,8 +915,10 @@ travelling salesman problem", *Journal of the ACM* 9(1):61–63, 1962):
 - C(S, j) = min sobre i ∈ S \ {j} de [ C(S \ {j}, i) + d(i, j) ]
 - Óptimo = min sobre j de [ C({1..k}, j) + d(j, 0) ]
 
-**Implementación.** S es una máscara de bits; las tablas `C[mascara][j-1]` y `padre[mascara][j-1]`
-son listas indexadas por máscara y se llenan en orden creciente de máscara (S \ {j} < S, ya está
+**Implementación.** Cada conjunto S se guarda como un número: el lugar j vale 2^(j−1) (1, 2, 4, 8, …)
+y S es la suma de lo que valen sus lugares, por ejemplo {1, 3} = 1 + 4 = 5. Las operaciones son
+sumas, restas y divisiones: ¿j está en S? = `(S // valor[j]) % 2 == 1`; S sin j = `S − valor[j]`.
+Las tablas `C[S][j-1]` y `padre[S][j-1]` se llenan en orden creciente (S \ {j} < S, ya está
 calculado). `padre` guarda el i del mínimo y permite **reconstruir el recorrido**.
 
 **Complejidad**: k·2^k pares (S, j), cada uno revisa hasta k valores de i → **O(k²·2^k)** tiempo
